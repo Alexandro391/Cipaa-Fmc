@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIPAA FMC — Portal do Funcionário</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+
+:root{
+  --g0:#062419;
+  --g1:#0a3d2e;
+  --g2:#115740;
+  --g3:#1a7a55;
+  --g4:#2ecc8a;
+  --g5:#d4f5e9;
+  --g6:#eaf7f2;
+  --white:#ffffff;
+  --off:#f5fbf8;
+  --td:#0d1f18;
+  --tm:#2d5a47;
+  --tl:#7ab89a;
+  --acc:#00e87a;
+  --acc2:#f0b429;
+  --danger:#e05252;
+  --info:#5b8dee;
+  --border:rgba(26,122,85,0.14);
+  --shadow-s:0 2px 10px rgba(10,61,46,0.07);
+  --shadow-m:0 8px 32px rgba(10,61,46,0.11);
+  --shadow-l:0 24px 64px rgba(10,61,46,0.16);
+  --font-h:'Syne',sans-serif;
+  --font-b:'DM Sans',sans-serif;
+  --r1:8px;--r2:14px;--r3:22px;--r4:32px;
+}
+
+body{font-family:var(--font-b);background:var(--g1);color:#e8f5ef;line-height:1.6;overflow-x:hidden;}
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--g6);}
+::-webkit-scrollbar-thumb{background:var(--g3);border-radius:3px;}
+
+/* ===== HEADER ===== */
+.header{
+  background:linear-gradient(to right, var(--g0) 0%, var(--g1) 100%);
+  padding:0 1.25rem;
+  position:sticky;top:0;z-index:200;
+  border-bottom:2px solid rgba(0,232,122,0.18);
+  box-shadow:0 4px 24px rgba(0,0,0,0.3);
+}
+.header-inner{
+  max-width:1320px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  height:64px;gap:0.75rem;
+}
+.logo-area{display:flex;align-items:center;gap:0.75rem;text-decoration:none;flex:1;min-width:0;}
+
+/* SVG logo badge inline */
+.logo-svg-wrap{
+  width:44px;height:44px;flex-shrink:0;
+  filter:drop-shadow(0 0 8px rgba(0,232,122,0.35));
+}
+.logo-text{color:var(--white);min-width:0;}
+.logo-text .brand{font-family:var(--font-h);font-weight:800;font-size:1rem;letter-spacing:-0.5px;line-height:1;}
+.logo-text .brand span{color:var(--acc);}
+.logo-text .sub{
+  font-size:0.62rem;color:rgba(255,255,255,0.45);
+  margin-top:0.2rem;letter-spacing:0.3px;line-height:1.3;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+.header-nav{display:flex;gap:0.15rem;}
+.nav-link{
+  color:rgba(255,255,255,0.6);text-decoration:none;
+  font-size:0.8rem;font-weight:500;
+  padding:0.4rem 0.8rem;border-radius:var(--r1);
+  transition:all 0.2s;white-space:nowrap;
+}
+.nav-link:hover{color:var(--white);background:rgba(255,255,255,0.07);}
+
+.header-pill{
+  background:linear-gradient(135deg,var(--g3),var(--g4));
+  color:var(--white);font-size:0.68rem;font-weight:700;
+  padding:0.35rem 0.8rem;border-radius:100px;
+  letter-spacing:0.3px;white-space:nowrap;flex-shrink:0;
+  border:1px solid rgba(255,255,255,0.15);
+}
+
+/* Mobile header: hide subtitle text, keep logo+brand+pill */
+@media(max-width:600px){
+  .logo-text .sub{display:none;}
+  .logo-text .brand{font-size:0.9rem;}
+  .header-pill{font-size:0.62rem;padding:0.3rem 0.65rem;}
+  .header-inner{height:58px;}
+  .logo-svg-wrap{width:38px;height:38px;}
+}
+
+/* ===== ADMIN BUTTON ===== */
+.admin-btn{
+  width:36px;height:36px;border-radius:var(--r1);flex-shrink:0;
+  background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+}
+.admin-btn:hover{background:rgba(0,232,122,0.12);border-color:rgba(0,232,122,0.25);}
+.admin-btn.active{
+  background:rgba(0,232,122,0.15);
+  border-color:rgba(0,232,122,0.4);
+  box-shadow:0 0 10px rgba(0,232,122,0.2);
+}
+
+/* Admin status bar */
+.admin-bar{
+  display:none;
+  background:linear-gradient(90deg,rgba(0,232,122,0.12),rgba(17,87,64,0.3));
+  border-bottom:1px solid rgba(0,232,122,0.2);
+  padding:0.4rem 1.25rem;
+  text-align:center;
+  font-size:0.72rem;color:var(--acc);font-weight:600;letter-spacing:0.5px;
+}
+.admin-bar.show{display:block;}
+
+/* Edit buttons hidden by default — shown only in admin mode */
+.edit-fab{
+  position:absolute;top:0.7rem;right:0.7rem;
+  width:26px;height:26px;border-radius:var(--r1);
+  background:transparent;border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;display:none;align-items:center;justify-content:center;
+  font-size:0.75rem;color:rgba(255,255,255,0.3);transition:all 0.2s;
+}
+.admin-mode .edit-fab{display:flex;}
+.edit-fab:hover{background:rgba(0,232,122,0.15);color:var(--acc);border-color:rgba(0,232,122,0.3);}
+
+.ev-edit-btn{
+  flex-shrink:0;font-size:0.72rem;color:rgba(255,255,255,0.4);
+  cursor:pointer;display:none;background:rgba(255,255,255,0.06);
+  border:1px solid rgba(255,255,255,0.1);border-radius:var(--r1);
+  padding:0.28rem 0.6rem;font-family:var(--font-b);transition:all 0.2s;
+}
+.admin-mode .ev-edit-btn{display:inline-block;}
+.ev-edit-btn:hover{background:rgba(0,232,122,0.12);color:var(--acc);border-color:rgba(0,232,122,0.25);}
+
+/* ===== AWARENESS — floating card format ===== */
+.awareness{
+  padding:0.75rem 1.25rem 1rem;
+  background:var(--g0);
+  border-bottom:1px solid rgba(0,232,122,0.1);
+}
+
+/* institutional subtitle — only on mobile */
+.aw-inst-sub{
+  display:none;
+  font-size:0.68rem;color:rgba(255,255,255,0.38);
+  line-height:1.5;margin-bottom:0.6rem;
+  padding-bottom:0.6rem;
+  border-bottom:1px solid rgba(255,255,255,0.06);
+}
+@media(max-width:600px){
+  .aw-inst-sub{display:block;}
+}
+.aw-card{
+  max-width:1320px;margin:0 auto;
+  background:linear-gradient(135deg,rgba(0,232,122,0.08),rgba(17,87,64,0.5));
+  border:1px solid rgba(0,232,122,0.22);
+  border-radius:var(--r2);
+  display:flex;align-items:flex-start;gap:1rem;
+  padding:1rem 1.25rem;
+  position:relative;
+}
+.aw-badge{
+  width:40px;height:40px;flex-shrink:0;
+  background:var(--acc);border-radius:var(--r1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.1rem;
+  box-shadow:0 2px 10px rgba(0,232,122,0.3);
+}
+.aw-body{flex:1;min-width:0;}
+.aw-top{display:flex;align-items:center;gap:0.5rem;margin-bottom:0.3rem;}
+.aw-tag{
+  font-size:0.6rem;font-weight:800;letter-spacing:1.4px;
+  text-transform:uppercase;color:var(--g0);
+  background:var(--acc);padding:0.15rem 0.55rem;border-radius:100px;
+}
+.aw-cat-label{
+  font-size:0.65rem;font-weight:600;color:var(--acc);
+  letter-spacing:0.5px;
+}
+#aw-text{
+  font-size:0.88rem;color:rgba(255,255,255,0.85);
+  line-height:1.5;font-weight:400;
+  transition:opacity 0.4s,transform 0.4s;
+}
+#aw-text.fade{opacity:0;transform:translateY(4px);}
+.aw-dots-row{
+  display:flex;align-items:center;gap:4px;margin-top:0.55rem;
+}
+.aw-dot{
+  width:18px;height:4px;border-radius:2px;
+  background:rgba(255,255,255,0.15);
+  transition:all 0.3s;cursor:pointer;
+}
+.aw-dot.on{background:var(--acc);width:28px;}
+
+/* ===== HERO ===== */
+.hero{
+  background:linear-gradient(150deg,var(--g0) 0%,var(--g1) 50%,var(--g2) 100%);
+  padding:4.5rem 2rem 3.5rem;
+  position:relative;overflow:hidden;
+}
+.hero-geo{position:absolute;inset:0;pointer-events:none;}
+.geo-circle{
+  position:absolute;border-radius:50%;
+  border:1px solid rgba(0,232,122,0.07);
+}
+.geo-1{width:500px;height:500px;top:-250px;right:-80px;}
+.geo-2{width:750px;height:750px;top:-375px;right:-230px;}
+.geo-3{width:280px;height:280px;bottom:-140px;left:-60px;}
+.geo-line{
+  position:absolute;width:1px;background:linear-gradient(to bottom,transparent,rgba(0,232,122,0.15),transparent);
+  top:0;bottom:0;
+}
+.geo-l1{left:20%;}
+.geo-l2{left:50%;}
+.geo-l3{left:80%;}
+
+.hero-inner{
+  max-width:1320px;margin:0 auto;
+  display:grid;grid-template-columns:1fr auto;
+  gap:3rem;align-items:center;position:relative;z-index:1;
+}
+.hero-tag{
+  display:inline-flex;align-items:center;gap:0.5rem;
+  background:rgba(0,232,122,0.1);
+  border:1px solid rgba(0,232,122,0.25);
+  color:var(--acc);font-size:0.72rem;font-weight:700;
+  padding:0.4rem 1rem;border-radius:100px;
+  margin-bottom:1.4rem;letter-spacing:0.6px;
+}
+.hero-tag::before{content:'●';font-size:0.45rem;animation:blink 2s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.2}}
+
+.hero h1{
+  font-family:var(--font-h);font-size:clamp(1.4rem,2.6vw,2.1rem);
+  font-weight:800;color:var(--white);
+  line-height:1.15;letter-spacing:-0.8px;margin-bottom:0.85rem;
+}
+.hero h1 .acc{color:var(--acc);}
+.hero p{
+  color:rgba(255,255,255,0.55);font-size:0.88rem;
+  max-width:480px;line-height:1.55;font-weight:300;margin-bottom:1.75rem;
+}
+@media(max-width:600px){
+  .hero p{font-size:0.82rem;line-height:1.5;margin-bottom:1.4rem;}
+}
+.hero-stats{display:flex;gap:2.5rem;}
+.stat-num{font-family:var(--font-h);font-size:1.9rem;font-weight:800;color:var(--acc);line-height:1;}
+.stat-lbl{font-size:0.7rem;color:rgba(255,255,255,0.4);margin-top:0.25rem;}
+
+/* logo card hero */
+.hero-logo-card{
+  background:rgba(255,255,255,0.05);
+  backdrop-filter:blur(12px);
+  border:1px solid rgba(255,255,255,0.1);
+  border-radius:var(--r3);
+  padding:2rem 1.75rem;
+  text-align:center;min-width:180px;
+}
+.hero-logo-card .cipaa-logo-big{width:100px;height:100px;margin:0 auto 1rem;}
+.hero-logo-card .hcard-title{
+  font-family:var(--font-h);font-weight:800;font-size:1rem;
+  color:var(--white);margin-bottom:0.2rem;
+}
+.hero-logo-card .hcard-sub{font-size:0.68rem;color:rgba(255,255,255,0.4);line-height:1.4;}
+
+/* ===== MAIN ===== */
+.main{max-width:1320px;margin:0 auto;padding:2.5rem 2rem;display:grid;gap:2rem;}
+
+/* ===== CARDS — dark theme ===== */
+.card{
+  background:rgba(6,36,25,0.75);
+  backdrop-filter:blur(8px);
+  border-radius:var(--r3);
+  padding:2rem;
+  border:1px solid rgba(0,232,122,0.1);
+  box-shadow:0 4px 24px rgba(0,0,0,0.25);
+}
+
+/* ===== SECTION HEADER ===== */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;gap:1rem;}
+.sh-left{display:flex;align-items:center;gap:0.85rem;}
+.sh-icon{
+  width:42px;height:42px;border-radius:var(--r2);
+  background:rgba(0,232,122,0.1);
+  display:flex;align-items:center;justify-content:center;font-size:1.1rem;
+  border:1px solid rgba(0,232,122,0.18);flex-shrink:0;
+}
+.sh-title{font-family:var(--font-h);font-weight:700;font-size:1.2rem;color:#e8f5ef;}
+.sh-sub{font-size:0.75rem;color:rgba(255,255,255,0.35);margin-top:0.1rem;}
+
+/* ===== MEMBERS ===== */
+.members-tabs{
+  display:flex;gap:0.4rem;margin-bottom:1.5rem;
+  background:rgba(255,255,255,0.04);border-radius:var(--r2);
+  padding:0.35rem;
+}
+.tab-btn{
+  flex:1;background:none;border:none;
+  font-family:var(--font-b);font-size:0.8rem;font-weight:500;
+  color:rgba(255,255,255,0.4);padding:0.55rem 0.5rem;border-radius:var(--r1);
+  cursor:pointer;transition:all 0.2s;white-space:nowrap;
+}
+.tab-btn.active{
+  background:rgba(0,232,122,0.12);color:var(--acc);font-weight:600;
+  border:1px solid rgba(0,232,122,0.2);
+}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+.members-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:0.9rem;}
+
+.member-card{
+  background:rgba(255,255,255,0.04);
+  border:1px solid rgba(0,232,122,0.1);
+  border-radius:var(--r2);padding:1.1rem;
+  position:relative;transition:all 0.22s;cursor:default;
+}
+.member-card:hover{background:rgba(0,232,122,0.07);border-color:rgba(0,232,122,0.25);transform:translateY(-2px);}
+
+.member-avatar{
+  width:46px;height:46px;border-radius:50%;
+  background:linear-gradient(135deg,var(--g3),var(--g4));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-h);font-weight:700;font-size:0.95rem;
+  color:var(--white);margin-bottom:0.7rem;
+  border:2.5px solid rgba(0,232,122,0.3);
+  box-shadow:0 2px 12px rgba(0,232,122,0.15);
+}
+.role-badge{
+  display:inline-block;font-size:0.62rem;font-weight:700;
+  letter-spacing:0.7px;text-transform:uppercase;
+  padding:0.18rem 0.55rem;border-radius:100px;margin-bottom:0.4rem;
+}
+.rp{background:rgba(240,180,41,0.18);color:#f0b429;}
+.rv{background:rgba(0,232,122,0.12);color:var(--acc);}
+.rs{background:rgba(91,141,238,0.12);color:#7eb4ff;}
+.rm{background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.5);}
+
+.member-name{font-family:var(--font-h);font-weight:700;font-size:0.88rem;color:#e8f5ef;line-height:1.2;margin-bottom:0.18rem;}
+.member-pos{font-size:0.72rem;color:rgba(255,255,255,0.35);}
+
+.edit-fab{
+  position:absolute;top:0.7rem;right:0.7rem;
+  width:26px;height:26px;border-radius:var(--r1);
+  background:transparent;border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+  font-size:0.75rem;color:rgba(255,255,255,0.3);transition:all 0.2s;opacity:0;
+}
+.member-card:hover .edit-fab{/* visibility controlled by admin mode only */}
+.edit-fab:hover{background:rgba(0,232,122,0.15);color:var(--acc);border-color:rgba(0,232,122,0.3);}
+
+/* ===== AGENDA ===== */
+.agenda-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+.ev-list{display:flex;flex-direction:column;gap:0.6rem;}
+.ev-item{
+  display:flex;align-items:center;gap:0.85rem;
+  padding:0.85rem 1rem;border-radius:var(--r2);
+  background:rgba(255,255,255,0.04);border:1px solid rgba(0,232,122,0.08);
+  transition:all 0.2s;
+}
+.ev-item:hover{background:rgba(0,232,122,0.07);border-color:rgba(0,232,122,0.2);}
+
+.ev-date{min-width:42px;text-align:center;flex-shrink:0;}
+.ev-day{font-family:var(--font-h);font-weight:800;font-size:1.35rem;color:var(--acc);line-height:1;}
+.ev-mon{font-size:0.62rem;font-weight:700;color:rgba(255,255,255,0.35);letter-spacing:0.5px;text-transform:uppercase;}
+.ev-sep{width:1px;background:rgba(255,255,255,0.08);flex-shrink:0;align-self:stretch;min-height:32px;}
+.ev-tdot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.dt-r{background:var(--g4);}
+.dt-s{background:var(--danger);}
+.dt-t{background:var(--info);}
+.dt-i{background:var(--acc2);}
+
+.ev-name{font-weight:500;font-size:0.85rem;color:#e8f5ef;line-height:1.3;}
+.ev-loc{font-size:0.72rem;color:rgba(255,255,255,0.35);margin-top:0.15rem;}
+.ev-time{font-size:0.68rem;color:var(--acc);font-weight:600;margin-top:0.1rem;}
+
+.ev-legend{
+  display:flex;gap:1rem;flex-wrap:wrap;
+  margin-top:1rem;padding-top:1rem;
+  border-top:1px solid rgba(255,255,255,0.06);
+}
+.leg-item{display:flex;align-items:center;gap:0.4rem;font-size:0.7rem;color:rgba(255,255,255,0.35);}
+.leg-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+
+/* ===== BOTTOM GRID ===== */
+.bottom-grid{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;}
+
+/* ===== REPORTS ===== */
+.rtype-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.65rem;margin-bottom:1.1rem;}
+.rtype-btn{
+  background:rgba(255,255,255,0.04);border:1.5px solid rgba(0,232,122,0.1);
+  border-radius:var(--r2);padding:0.9rem;cursor:pointer;
+  text-align:left;transition:all 0.2s;font-family:var(--font-b);
+}
+.rtype-btn:hover{background:rgba(0,232,122,0.07);border-color:rgba(0,232,122,0.25);}
+.rtype-btn.sel{background:rgba(0,232,122,0.1);border-color:rgba(0,232,122,0.3);}
+.rtype-btn.sel .rtl{color:var(--acc);}
+.rti{font-size:1.25rem;display:block;margin-bottom:0.35rem;}
+.rtl{font-size:0.78rem;font-weight:700;color:#e8f5ef;margin-bottom:0.1rem;}
+.rtd{font-size:0.68rem;color:rgba(255,255,255,0.35);}
+
+.rform{display:flex;flex-direction:column;gap:0.7rem;}
+.ff{display:flex;flex-direction:column;gap:0.3rem;}
+.ff label{font-size:0.76rem;font-weight:600;color:rgba(255,255,255,0.6);}
+.ff input,.ff textarea,.ff select{
+  font-family:var(--font-b);font-size:0.84rem;
+  border:1.5px solid rgba(0,232,122,0.12);border-radius:var(--r1);
+  padding:0.6rem 0.85rem;color:#e8f5ef;
+  background:rgba(255,255,255,0.05);outline:none;transition:all 0.2s;resize:none;
+}
+.ff input::placeholder,.ff textarea::placeholder{color:rgba(255,255,255,0.2);}
+.ff input:focus,.ff textarea:focus,.ff select:focus{
+  border-color:var(--acc);background:rgba(0,232,122,0.06);
+  box-shadow:0 0 0 3px rgba(0,232,122,0.08);
+}
+.ff select option{background:var(--g1);color:#e8f5ef;}
+.btn-prim{
+  background:linear-gradient(135deg,var(--g3),var(--g4));
+  color:var(--white);border:none;border-radius:var(--r2);
+  padding:0.8rem 1.5rem;font-family:var(--font-b);
+  font-size:0.88rem;font-weight:600;cursor:pointer;
+  transition:all 0.2s;width:100%;letter-spacing:0.3px;
+}
+.btn-prim:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(0,232,122,0.25);}
+
+/* ===== DOCS ===== */
+.doc-list{display:flex;flex-direction:column;gap:0.55rem;}
+.doc-item{
+  display:flex;align-items:center;gap:0.85rem;
+  padding:0.8rem 1rem;border-radius:var(--r2);
+  border:1px solid rgba(0,232,122,0.08);background:rgba(255,255,255,0.04);
+  transition:all 0.2s;
+}
+.doc-item:hover{background:rgba(0,232,122,0.07);border-color:rgba(0,232,122,0.2);}
+.doc-ico{
+  width:34px;height:34px;border-radius:var(--r1);
+  display:flex;align-items:center;justify-content:center;
+  font-size:0.95rem;flex-shrink:0;
+}
+.di-pdf{background:rgba(224,82,82,0.12);}
+.di-doc{background:rgba(91,141,238,0.12);}
+.di-map{background:rgba(240,180,41,0.12);}
+.doc-name{font-size:0.83rem;font-weight:500;color:#e8f5ef;}
+.doc-info{font-size:0.68rem;color:rgba(255,255,255,0.3);margin-top:0.1rem;}
+.doc-actions{margin-left:auto;display:flex;gap:0.4rem;align-items:center;}
+.doc-dl,.doc-view{
+  font-size:0.75rem;padding:0.28rem 0.65rem;border-radius:var(--r1);
+  cursor:pointer;transition:all 0.2s;font-family:var(--font-b);font-weight:500;border:none;
+}
+.doc-dl{background:rgba(0,232,122,0.12);color:var(--acc);}
+.doc-dl:hover{background:var(--acc);color:var(--g0);}
+.doc-view{background:transparent;color:rgba(255,255,255,0.3);}
+.doc-view:hover{color:var(--acc);}
+
+/* Upload area */
+.upload-zone{
+  border:2px dashed rgba(0,232,122,0.22);
+  border-radius:var(--r2);padding:1.5rem 1.25rem;
+  text-align:center;cursor:pointer;transition:all 0.2s;
+  background:rgba(255,255,255,0.02);margin-top:0.5rem;
+  user-select:none;
+}
+.upload-zone:hover,.upload-zone:active,.upload-zone.drag{
+  border-color:var(--acc);background:rgba(0,232,122,0.06);
+}
+.uz-icon{font-size:1.6rem;margin-bottom:0.5rem;}
+.uz-text{font-size:0.82rem;color:rgba(255,255,255,0.5);}
+.uz-text strong{color:var(--acc);}
+.uz-hint{font-size:0.68rem;color:rgba(255,255,255,0.25);margin-top:0.3rem;}
+
+#upload-list{display:flex;flex-direction:column;gap:0.4rem;margin-top:0.6rem;}
+.upl-item{
+  display:flex;align-items:center;gap:0.6rem;
+  background:rgba(0,232,122,0.07);border:1px solid rgba(0,232,122,0.12);
+  border-radius:var(--r1);padding:0.5rem 0.75rem;font-size:0.78rem;color:#e8f5ef;
+}
+.upl-item .upl-ico{font-size:0.9rem;}
+.upl-item .upl-name{flex:1;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.upl-item .upl-size{color:rgba(255,255,255,0.3);font-size:0.68rem;}
+.upl-item .upl-rm{background:none;border:none;color:rgba(255,255,255,0.3);cursor:pointer;font-size:0.85rem;padding:0 0.2rem;}
+.upl-item .upl-rm:hover{color:var(--danger);}
+
+/* ===== MODAL ===== */
+.overlay{
+  position:fixed;inset:0;
+  background:rgba(0,0,0,0.7);
+  backdrop-filter:blur(6px);
+  z-index:500;display:none;align-items:center;justify-content:center;padding:1rem;
+}
+.overlay.open{display:flex;}
+.modal{
+  background:var(--g1);border-radius:var(--r4);
+  padding:2rem;width:100%;max-width:430px;
+  box-shadow:0 32px 80px rgba(0,0,0,0.5);
+  border:1px solid rgba(0,232,122,0.15);
+  animation:mIn 0.22s ease;
+}
+@keyframes mIn{from{opacity:0;transform:scale(0.95) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.modal-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
+.modal-title{font-family:var(--font-h);font-weight:700;font-size:1.05rem;color:#e8f5ef;}
+.modal-x{
+  width:30px;height:30px;border-radius:var(--r1);
+  background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);
+  cursor:pointer;font-size:0.9rem;display:flex;align-items:center;justify-content:center;
+  color:rgba(255,255,255,0.4);transition:all 0.2s;
+}
+.modal-x:hover{background:rgba(0,232,122,0.12);color:var(--acc);}
+.modal-body{display:flex;flex-direction:column;gap:0.9rem;}
+.modal-act{display:flex;gap:0.7rem;margin-top:0.25rem;}
+.btn-sec{
+  flex:1;background:rgba(255,255,255,0.05);color:rgba(255,255,255,0.6);
+  border:1px solid rgba(255,255,255,0.1);border-radius:var(--r2);
+  padding:0.7rem;font-family:var(--font-b);font-size:0.84rem;
+  font-weight:500;cursor:pointer;transition:all 0.2s;
+}
+.btn-sec:hover{background:rgba(255,255,255,0.08);}
+.btn-save{
+  flex:2;background:linear-gradient(135deg,var(--g3),var(--g4));
+  color:var(--white);border:none;border-radius:var(--r2);
+  padding:0.7rem;font-family:var(--font-b);font-size:0.88rem;
+  font-weight:600;cursor:pointer;transition:all 0.2s;
+}
+.btn-save:hover{box-shadow:0 4px 16px rgba(0,232,122,0.25);}
+
+/* ===== TOAST ===== */
+.toast{
+  position:fixed;bottom:2rem;right:2rem;
+  background:var(--g0);color:var(--white);
+  padding:0.85rem 1.25rem;border-radius:var(--r2);
+  font-size:0.84rem;font-weight:500;
+  display:flex;align-items:center;gap:0.6rem;
+  z-index:1000;box-shadow:var(--shadow-l);
+  transform:translateY(12px);opacity:0;
+  transition:all 0.3s;pointer-events:none;
+  border-left:3px solid var(--acc);max-width:340px;
+}
+.toast.on{transform:translateY(0);opacity:1;}
+
+/* ===== FOOTER ===== */
+.footer{
+  background:var(--g0);padding:2rem;margin-top:0.5rem;
+  border-top:1px solid rgba(255,255,255,0.05);
+}
+.footer-inner{
+  max-width:1320px;margin:0 auto;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:1rem;flex-wrap:wrap;
+}
+.ft-brand{font-family:var(--font-h);font-weight:700;color:var(--white);font-size:0.9rem;}
+.ft-brand span{color:var(--acc);}
+.ft-sub{font-size:0.7rem;color:rgba(255,255,255,0.3);margin-top:0.2rem;}
+.ft-links{display:flex;gap:1.5rem;}
+.ft-link{font-size:0.75rem;color:rgba(255,255,255,0.35);text-decoration:none;transition:color 0.2s;}
+.ft-link:hover{color:var(--g4);}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:1fr;}
+  .hero-logo-card{display:none;}
+  .agenda-grid,.bottom-grid{grid-template-columns:1fr;}
+  .header-nav{display:none;}
+}
+@media(max-width:600px){
+  .hero{padding:3rem 1.25rem 2.5rem;}
+  .main{padding:1.5rem 1rem;}
+  .header{padding:0 1rem;}
+  .rtype-grid{grid-template-columns:1fr 1fr;}
+  .members-grid{grid-template-columns:1fr 1fr;}
+  .members-tabs{flex-wrap:wrap;}
+  .aw-label{padding:0 1rem;}
+}
+
+/* ===== BUBBLES ===== */
+#bubble-canvas{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:0;
+  opacity:0.55;
+}
+/* Make sure all content stays above canvas */
+.header,.awareness,.hero,.main,.footer{position:relative;z-index:1;}
+</style>
+</head>
+<body>
+
+<!-- BUBBLES BACKGROUND -->
+<canvas id="bubble-canvas"></canvas>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo-area" href="#">
+      <div class="logo-svg-wrap">
+        <!-- CIPAA Logo SVG (rebuilt with letter A) -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="#0a3d2e"/>
+          <!-- Shield -->
+          <path d="M50 15 L74 26 L74 52 Q74 68 50 82 Q26 68 26 52 L26 26 Z" fill="none" stroke="#00e87a" stroke-width="3.5" stroke-linejoin="round"/>
+          <!-- Person icon -->
+          <circle cx="50" cy="36" r="7" fill="#00e87a"/>
+          <path d="M35 58 Q35 47 50 47 Q65 47 65 58" fill="#00e87a"/>
+          <!-- Checkmark on body -->
+          <polyline points="44,55 48,59 56,51" fill="none" stroke="#0a3d2e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <!-- CIPAA text -->
+          <text x="50" y="76" text-anchor="middle" font-family="Syne,sans-serif" font-weight="800" font-size="10" fill="#ffffff" letter-spacing="1">CIPAA</text>
+          <text x="50" y="86" text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="300" font-size="5.5" fill="rgba(255,255,255,0.5)" letter-spacing="1.5">PREVENÇÃO · SAÚDE · VIDA</text>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="brand">CIPAA · <span>FMC</span></div>
+        <div class="sub">Comissão Interna de Prevenção de Acidentes e Assédio<br>Faculdade de Medicina de Campos · FBPN</div>
+      </div>
+    </a>
+    <nav class="header-nav">
+      <a class="nav-link" href="#membros">Membros</a>
+      <a class="nav-link" href="#agenda">Agenda</a>
+      <a class="nav-link" href="#relatos">Relatos</a>
+      <a class="nav-link" href="#documentos">Documentos</a>
+    </nav>
+    <div class="header-pill">Gestão 2026/2027</div>
+    <button class="admin-btn" id="admin-toggle-btn" onclick="handleAdminBtn()" title="Área do Administrador">🔐</button>
+  </div>
+</header>
+
+<!-- ADMIN STATUS BAR -->
+<div class="admin-bar" id="admin-bar">
+  ⚙️ MODO ADMINISTRADOR ATIVO — Botões de edição habilitados &nbsp;·&nbsp;
+  <span style="cursor:pointer;text-decoration:underline;opacity:0.7;" onclick="openModal('admin-logout-modal')">Encerrar sessão</span>
+</div>
+
+<!-- AWARENESS CARD -->
+<div class="awareness">
+  <!-- Subtítulo institucional — visível só no mobile (sub some do header) -->
+  <div class="aw-inst-sub">
+    CIPAA · Comissão Interna de Prevenção de Acidentes e Assédio<br>
+    Faculdade de Medicina de Campos · FBPN
+  </div>
+  <div class="aw-card">
+    <div class="aw-badge" id="aw-badge">💡</div>
+    <div class="aw-body">
+      <div class="aw-top">
+        <span class="aw-tag">Dica de Segurança</span>
+        <span class="aw-cat-label" id="aw-cat">Carregando</span>
+      </div>
+      <div id="aw-text">...</div>
+      <div class="aw-dots-row" id="aw-dots"></div>
+    </div>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-geo">
+    <div class="geo-circle geo-1"></div>
+    <div class="geo-circle geo-2"></div>
+    <div class="geo-circle geo-3"></div>
+    <div class="geo-line geo-l1"></div>
+    <div class="geo-line geo-l2"></div>
+    <div class="geo-line geo-l3"></div>
+  </div>
+  <div class="hero-inner">
+    <div>
+      <div class="hero-tag">Portal do Funcionário · FMC / FBPN</div>
+      <h1>Segurança e respeito<br>são <span class="acc">direitos</span> de<br>todo funcionário.</h1>
+      <p>Portal digital da CIPAA — Comissão Interna de Prevenção de Acidentes e Assédio da Faculdade de Medicina de Campos. Transparência, prevenção e bem-estar no ambiente de trabalho.</p>
+      <div class="hero-stats">
+        <div><div class="stat-num">16</div><div class="stat-lbl">Membros ativos</div></div>
+        <div><div class="stat-num">12</div><div class="stat-lbl">Reuniões/ano</div></div>
+        <div><div class="stat-num">2026</div><div class="stat-lbl">Gestão atual</div></div>
+      </div>
+    </div>
+    <div class="hero-logo-card">
+      <div class="cipaa-logo-big">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="48" fill="rgba(255,255,255,0.06)"/>
+          <path d="M50 15 L74 26 L74 52 Q74 68 50 82 Q26 68 26 52 L26 26 Z" fill="none" stroke="#00e87a" stroke-width="3.5" stroke-linejoin="round"/>
+          <circle cx="50" cy="36" r="7" fill="#00e87a"/>
+          <path d="M35 58 Q35 47 50 47 Q65 47 65 58" fill="#00e87a"/>
+          <polyline points="44,55 48,59 56,51" fill="none" stroke="#0a3d2e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          <text x="50" y="76" text-anchor="middle" font-family="Syne,sans-serif" font-weight="800" font-size="10" fill="#ffffff" letter-spacing="1">CIPAA</text>
+          <text x="50" y="86" text-anchor="middle" font-family="DM Sans,sans-serif" font-weight="300" font-size="5.5" fill="rgba(255,255,255,0.5)" letter-spacing="1.5">PREVENÇÃO · SAÚDE · VIDA</text>
+        </svg>
+      </div>
+      <div class="hcard-title">CIPAA · FMC</div>
+      <div class="hcard-sub">Comissão Interna de<br>Prevenção de Acidentes<br>e Assédio · Gestão 2026</div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- MEMBERS -->
+  <section id="membros" class="card">
+    <div class="sh">
+      <div class="sh-left">
+        <div class="sh-icon">👥</div>
+        <div>
+          <div class="sh-title">Membros da CIPAA</div>
+          <div class="sh-sub">Gestão 2026/2027 · 16 representantes</div>
+        </div>
+      </div>
+    </div>
+    <div class="members-tabs">
+      <button class="tab-btn active" onclick="switchTab('tec')">Corpo Técnico-Administrativo</button>
+    </div>
+    <div id="tab-tec" class="tab-content active">
+      <div class="members-grid" id="grid-tec"></div>
+    </div>
+  </section>
+
+  <!-- AGENDA -->
+  <section id="agenda">
+    <div class="sh" style="margin-bottom:1rem;">
+      <div class="sh-left">
+        <div class="sh-icon">📅</div>
+        <div>
+          <div class="sh-title">Calendário de Reuniões — Gestão 2026</div>
+          <div class="sh-sub">Última quinta-feira do mês · Sala da Congregação</div>
+        </div>
+      </div>
+    </div>
+    <div class="agenda-grid">
+      <div class="card" style="padding:1.5rem;">
+        <div class="sh" style="margin-bottom:1rem;">
+          <div class="sh-left">
+            <div class="sh-icon" style="width:34px;height:34px;font-size:0.9rem;">📋</div>
+            <div><div class="sh-title" style="font-size:1rem;">Reuniões Ordinárias</div></div>
+          </div>
+        </div>
+        <div class="ev-list" id="ev-reunions"></div>
+        <div class="ev-legend">
+          <div class="leg-item"><div class="leg-dot dt-r"></div>Reunião</div>
+          <div class="leg-item"><div class="leg-dot dt-s"></div>SIPAT</div>
+          <div class="leg-item"><div class="leg-dot dt-t"></div>Treinamento</div>
+        </div>
+      </div>
+      <div class="card" style="padding:1.5rem;">
+        <div class="sh" style="margin-bottom:1rem;">
+          <div class="sh-left">
+            <div class="sh-icon" style="width:34px;height:34px;font-size:0.9rem;">🔍</div>
+            <div><div class="sh-title" style="font-size:1rem;">Inspeções & Eventos</div></div>
+          </div>
+        </div>
+        <div class="ev-list" id="ev-inspections"></div>
+        <div class="ev-legend">
+          <div class="leg-item"><div class="leg-dot dt-i"></div>Inspeção</div>
+          <div class="leg-item"><div class="leg-dot dt-s"></div>SIPAT</div>
+          <div class="leg-item"><div class="leg-dot dt-t"></div>Brigada</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BOTTOM GRID -->
+  <div class="bottom-grid">
+
+    <!-- REPORTS -->
+    <section id="relatos" class="card">
+      <div class="sh">
+        <div class="sh-left">
+          <div class="sh-icon">📢</div>
+          <div>
+            <div class="sh-title">Central de Relatos</div>
+            <div class="sh-sub">Sugestões, denúncias e quase-acidentes</div>
+          </div>
+        </div>
+      </div>
+      <div class="rtype-grid">
+        <button class="rtype-btn sel" onclick="selType(this,'risco')">
+          <span class="rti">⚠️</span><div class="rtl">Risco Identificado</div><div class="rtd">Condições inseguras</div>
+        </button>
+        <button class="rtype-btn" onclick="selType(this,'quase')">
+          <span class="rti">🚨</span><div class="rtl">Quase-Acidente</div><div class="rtd">Incidente sem lesão</div>
+        </button>
+        <button class="rtype-btn" onclick="selType(this,'assedio')">
+          <span class="rti">🛡️</span><div class="rtl">Assédio / Conduta</div><div class="rtd">Relato confidencial</div>
+        </button>
+        <button class="rtype-btn" onclick="selType(this,'sugestao')">
+          <span class="rti">💡</span><div class="rtl">Sugestão</div><div class="rtd">Melhoria preventiva</div>
+        </button>
+      </div>
+      <div class="rform">
+        <div class="ff">
+          <label>Local / Setor</label>
+          <input type="text" id="r-local" placeholder="Ex: Laboratório de Anatomia, Secretaria, Bloco B...">
+        </div>
+        <div class="ff">
+          <label>Descrição detalhada</label>
+          <textarea id="r-desc" rows="3" placeholder="Descreva com o máximo de detalhes possível..."></textarea>
+        </div>
+        <div class="ff">
+          <label>Identificação <span style="font-weight:400;color:var(--tl)">(opcional — relato anônimo permitido)</span></label>
+          <input type="text" id="r-name" placeholder="Nome ou matrícula">
+        </div>
+        <button class="btn-prim" onclick="submitReport()">📨 Enviar Relato à CIPAA</button>
+      </div>
+    </section>
+
+    <!-- DOCS -->
+    <section id="documentos" class="card">
+      <div class="sh">
+        <div class="sh-left">
+          <div class="sh-icon">📁</div>
+          <div>
+            <div class="sh-title">Documentação</div>
+            <div class="sh-sub">Arquivos publicados pela CIPAA</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lista de documentos do Firestore -->
+      <div class="doc-list" id="doc-list">
+        <div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.25);font-size:0.82rem;">
+          Carregando documentos…
+        </div>
+      </div>
+
+      <!-- Formulário de upload via link — só visível para admin -->
+      <div class="admin-mode" id="doc-upload-area" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(0,232,122,0.1);">
+        <div class="sh-sub" style="margin-bottom:0.75rem;font-weight:600;color:rgba(255,255,255,0.55);">➕ Adicionar documento</div>
+        <div class="rform" style="gap:0.6rem;">
+          <div class="ff">
+            <label>Nome do documento</label>
+            <input type="text" id="doc-nome" placeholder="Ex: Ata da Reunião de Março">
+          </div>
+          <div class="ff">
+            <label>Link do Google Drive</label>
+            <input type="url" id="doc-url" placeholder="https://drive.google.com/...">
+          </div>
+          <button class="btn-prim" onclick="addDocumento()">📎 Publicar documento</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div>
+      <div class="ft-brand">CIPAA · <span>FMC</span> / FBPN</div>
+      <div class="ft-sub">Faculdade de Medicina de Campos · Fundação Benedito Pereira Nunes · Gestão 2026/2027</div>
+    </div>
+    <div class="ft-links">
+      <a class="ft-link" href="#">FMC</a>
+      <a class="ft-link" href="#">Suporte</a>
+      <a class="ft-link" href="#">Política de Privacidade</a>
+    </div>
+  </div>
+</footer>
+
+<!-- MODAL MEMBRO -->
+<div class="overlay" id="m-modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">✏️ Editar Membro</div>
+      <button class="modal-x" onclick="closeModal('m-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="em-id">
+      <div class="ff"><label>Nome completo</label><input type="text" id="em-name"></div>
+      <div class="ff"><label>Cargo / Função</label><input type="text" id="em-pos"></div>
+      <div class="ff">
+        <label>Função na CIPAA</label>
+        <select id="em-role">
+          <option value="membro">Membro</option>
+          <option value="presidente">Presidente</option>
+          <option value="vice">Vice-Presidente</option>
+          <option value="secretario">Secretária(o)</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-act">
+      <button class="btn-sec" onclick="closeModal('m-modal')">Cancelar</button>
+      <button class="btn-save" onclick="saveMember()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EVENTO -->
+<div class="overlay" id="e-modal">
+  <div class="modal">
+    <div class="modal-hd">
+      <div class="modal-title">✏️ Editar Evento</div>
+      <button class="modal-x" onclick="closeModal('e-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <input type="hidden" id="ee-id">
+      <input type="hidden" id="ee-list">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.7rem;">
+        <div class="ff"><label>Dia</label><input type="number" id="ee-day" min="1" max="31"></div>
+        <div class="ff"><label>Mês</label><input type="text" id="ee-mon" placeholder="Ex: MAR"></div>
+      </div>
+      <div class="ff"><label>Horário</label><input type="text" id="ee-time" placeholder="Ex: 15h30min"></div>
+      <div class="ff"><label>Nome do evento</label><input type="text" id="ee-name"></div>
+      <div class="ff"><label>Local</label><input type="text" id="ee-loc"></div>
+    </div>
+    <div class="modal-act">
+      <button class="btn-sec" onclick="closeModal('e-modal')">Cancelar</button>
+      <button class="btn-save" onclick="saveEvent()">💾 Salvar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">✅ <span id="toast-msg"></span></div>
+
+<!-- MODAL LOGIN ADMIN -->
+<div class="overlay" id="admin-modal">
+  <div class="modal" style="max-width:380px;">
+    <div class="modal-hd">
+      <div class="modal-title">🔐 Acesso Administrativo</div>
+      <button class="modal-x" onclick="closeModal('admin-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;margin-bottom:0.5rem;">
+        <div style="font-size:2.5rem;margin-bottom:0.5rem;">🛡️</div>
+        <div style="font-size:0.82rem;color:rgba(255,255,255,0.45);line-height:1.5;">
+          Área restrita à mesa diretora da CIPAA.<br>Insira a senha para habilitar as edições.
+        </div>
+      </div>
+      <div class="ff">
+        <label>Senha de administrador</label>
+        <div style="position:relative;">
+          <input type="password" id="admin-pw-input" placeholder="••••••••"
+            onkeydown="if(event.key==='Enter')doAdminLogin()"
+            style="padding-right:2.5rem;">
+          <button onclick="togglePwVis()" style="
+            position:absolute;right:0.6rem;top:50%;transform:translateY(-50%);
+            background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:0.9rem;
+          " id="pw-eye">👁️</button>
+        </div>
+      </div>
+      <div id="admin-error" style="
+        display:none;font-size:0.78rem;color:#ff7b7b;
+        background:rgba(224,82,82,0.1);border:1px solid rgba(224,82,82,0.2);
+        border-radius:var(--r1);padding:0.5rem 0.75rem;
+      ">❌ Senha incorreta. Tente novamente.</div>
+    </div>
+    <div class="modal-act">
+      <button class="btn-sec" onclick="closeModal('admin-modal')">Cancelar</button>
+      <button class="btn-save" onclick="doAdminLogin()">🔓 Entrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL LOGOUT ADMIN -->
+<div class="overlay" id="admin-logout-modal">
+  <div class="modal" style="max-width:360px;">
+    <div class="modal-hd">
+      <div class="modal-title">⚙️ Modo Administrador</div>
+      <button class="modal-x" onclick="closeModal('admin-logout-modal')">✕</button>
+    </div>
+    <div class="modal-body" style="text-align:center;">
+      <div style="font-size:2rem;margin-bottom:0.5rem;">✅</div>
+      <div style="font-size:0.88rem;color:rgba(255,255,255,0.7);line-height:1.6;margin-bottom:0.25rem;">
+        Você está logado como <strong style="color:var(--acc);">Administrador</strong>.<br>
+        Os botões de edição estão ativos em toda a página.
+      </div>
+      <div style="font-size:0.72rem;color:rgba(255,255,255,0.3);">A sessão encerra ao fechar o navegador.</div>
+    </div>
+    <div class="modal-act" style="margin-top:1rem;">
+      <button class="btn-sec" onclick="closeModal('admin-logout-modal')">Fechar</button>
+      <button onclick="doAdminLogout()" style="
+        flex:2;background:rgba(224,82,82,0.15);color:#ff9090;
+        border:1px solid rgba(224,82,82,0.25);border-radius:var(--r2);
+        padding:0.7rem;font-family:var(--font-b);font-size:0.88rem;
+        font-weight:600;cursor:pointer;transition:all 0.2s;
+      ">🔒 Encerrar sessão</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ==================== FIREBASE ====================
+import { initializeApp }       from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js';
+import { getFirestore, collection, doc, getDocs, setDoc, addDoc, serverTimestamp }
+                                from 'https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js';
+
+const firebaseConfig = {
+  apiKey:            'AIzaSyBj5nfrw4qYRXkZCA6NMykDPlYc9mk2e24',
+  authDomain:        'cipaa-fmc.firebaseapp.com',
+  projectId:         'cipaa-fmc',
+  storageBucket:     'cipaa-fmc.firebasestorage.app',
+  messagingSenderId: '416973088216',
+  appId:             '1:416973088216:web:04f8996bd534f3d195fead',
+  measurementId:     'G-YR556Z6ZHR'
+};
+
+const app = initializeApp(firebaseConfig);
+const db  = getFirestore(app);
+
+// ==================== SEED DATA (defaults) ====================
+const DEFAULT_MEMBERS = [
+  {id:'m1',name:'Michelliny Correa Tavares Lopes',pos:'Corpo Técnico-Administrativo',role:'presidente'},
+  {id:'m2',name:'Eliana Muniz',pos:'Corpo Técnico-Administrativo',role:'vice'},
+  {id:'m3',name:'Fernanda de Araújo',pos:'Corpo Técnico-Administrativo',role:'secretario'},
+  {id:'m4',name:'Juliana Matos',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m5',name:'Sheyla Maria',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m6',name:'Eliane',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m7',name:'Filipe',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m8',name:'Heloísa Renata',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m9',name:'Júlio',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m10',name:'José Carlos',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m11',name:'Juliana',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m12',name:'Lourdes Costa',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m13',name:'Wellington Gomes',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m14',name:'José Geraldo',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m15',name:'Jean',pos:'Corpo Técnico-Administrativo',role:'membro'},
+  {id:'m16',name:'[Membro 16]',pos:'Corpo Técnico-Administrativo',role:'membro'},
+];
+
+const DEFAULT_REUNIONS = [
+  {id:'r1',day:14,mon:'JAN',time:'11h00',name:'Reunião Ordinária — Janeiro',loc:'Sala da Congregação',type:'r'},
+  {id:'r2',day:2,mon:'MAR',time:'15h00',name:'Reunião de Fevereiro (Remarcada)',loc:'Sala da Congregação',type:'r'},
+  {id:'r3',day:26,mon:'MAR',time:'15h30',name:'Reunião Ordinária — Março',loc:'Sala da Congregação',type:'r'},
+  {id:'r4',day:30,mon:'ABR',time:'11h00',name:'Reunião Ordinária — Abril',loc:'Sala da Congregação',type:'r'},
+  {id:'r5',day:28,mon:'MAI',time:'15h30',name:'Reunião Ordinária — Maio',loc:'Sala da Congregação',type:'r'},
+  {id:'r6',day:25,mon:'JUN',time:'11h00',name:'Reunião Ordinária — Junho',loc:'Sala da Congregação',type:'r'},
+  {id:'r7',day:30,mon:'JUL',time:'15h30',name:'Reunião Ordinária — Julho',loc:'Sala da Congregação',type:'r'},
+  {id:'r8',day:27,mon:'AGO',time:'11h00',name:'Reunião Ordinária — Agosto',loc:'Sala da Congregação',type:'r'},
+  {id:'r9',day:24,mon:'SET',time:'15h30',name:'Reunião Ordinária — Setembro',loc:'Sala da Congregação',type:'r'},
+  {id:'r10',day:29,mon:'OUT',time:'11h00',name:'Reunião Ordinária — Outubro',loc:'Sala da Congregação',type:'r'},
+  {id:'r11',day:26,mon:'NOV',time:'15h30',name:'Reunião Ordinária — Novembro',loc:'Sala da Congregação',type:'r'},
+  {id:'r12',day:17,mon:'DEZ',time:'11h00',name:'Reunião Ordinária — Dezembro ★',loc:'Sala da Congregação',type:'r'},
+];
+
+const DEFAULT_INSPECTIONS = [
+  {id:'i1',day:28,mon:'MAR',time:'09h00',name:'Inspeção — Laboratórios Bloco A',loc:'Bloco A',type:'i'},
+  {id:'i2',day:15,mon:'MAI',time:'10h00',name:'Inspeção — Biblioteca e Áreas Comuns',loc:'Biblioteca Central',type:'i'},
+  {id:'i3',day:22,mon:'AGO',time:'08h00',name:'Treinamento Brigada de Incêndio',loc:'Área Externa Campus',type:'t'},
+  {id:'i4',day:5,mon:'OUT',time:'09h00',name:'SIPAT 2026 — Abertura',loc:'Auditório Principal',type:'s'},
+  {id:'i5',day:12,mon:'OUT',time:'11h00',name:'SIPAT 2026 — Encerramento',loc:'Auditório Principal',type:'s'},
+  {id:'i6',day:3,mon:'NOV',time:'14h00',name:'Curso NR-35 — Trabalho em Altura',loc:'Sala 12, Bloco B',type:'t'},
+];
+
+// ==================== LOAD FROM FIRESTORE ====================
+async function loadOrSeed(colName, defaults) {
+  const snap = await getDocs(collection(db, colName));
+  if (!snap.empty) {
+    return snap.docs.map(d => ({ id: d.id, ...d.data() }));
+  }
+  // Seed defaults on first run
+  for (const item of defaults) {
+    const { id, ...data } = item;
+    await setDoc(doc(db, colName, id), data);
+  }
+  return defaults;
+}
+
+function showLoadingOverlay(show) {
+  let el = document.getElementById('fb-loading');
+  if (!el) {
+    el = document.createElement('div');
+    el.id = 'fb-loading';
+    el.innerHTML = `<div style="
+      position:fixed;inset:0;z-index:9999;
+      background:rgba(6,36,25,0.92);
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:1rem;
+    ">
+      <div style="width:44px;height:44px;border:3px solid rgba(0,232,122,0.2);
+        border-top-color:#00e87a;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <div style="font-family:Syne,sans-serif;font-size:0.85rem;color:rgba(255,255,255,0.5);">
+        Conectando ao Firebase…
+      </div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>`;
+    document.body.appendChild(el);
+  }
+  el.style.display = show ? 'block' : 'none';
+}
+
+// ==================== STATE ====================
+const S = {
+  members: [],
+  reunions: [],
+  inspections: [],
+  editM: null,
+  editE: null,
+  rType: 'risco',
+  uploads: [],
+  documentos: [],
+};
+
+// Boot: load all data then render
+(async () => {
+  showLoadingOverlay(true);
+  try {
+    [S.members, S.reunions, S.inspections] = await Promise.all([
+      loadOrSeed('members',     DEFAULT_MEMBERS),
+      loadOrSeed('reunions',    DEFAULT_REUNIONS),
+      loadOrSeed('inspections', DEFAULT_INSPECTIONS),
+    ]);
+    // Carregar documentos (sem seed — começa vazio)
+    const docsSnap = await getDocs(collection(db,'documentos'));
+    S.documentos = docsSnap.docs.map(d=>({id:d.id,...d.data()}));
+    renderMembers();
+    renderEvents('reunions',    'ev-reunions');
+    renderEvents('inspections', 'ev-inspections');
+    renderDocumentos();
+  } catch(e) {
+    console.error('Firebase error:', e);
+    // Fallback to defaults if offline
+    S.members     = DEFAULT_MEMBERS;
+    S.reunions    = DEFAULT_REUNIONS;
+    S.inspections = DEFAULT_INSPECTIONS;
+    renderMembers();
+    renderEvents('reunions',    'ev-reunions');
+    renderEvents('inspections', 'ev-inspections');
+    renderDocumentos();
+    toast('⚠️ Modo offline — dados locais carregados.');
+  }
+  showLoadingOverlay(false);
+})();
+
+// ==================== AWARENESS ====================
+const TIPS = [
+  {cat:'Biossegurança',icon:'🦺',txt:'Use sempre EPI adequado ao acessar laboratórios. Jaleco, luvas e óculos de proteção são obrigatórios para todos os funcionários.'},
+  {cat:'Ergonomia',icon:'🪑',txt:'Ajuste sua cadeira para que os pés fiquem apoiados no chão e o monitor fique na altura dos olhos. Pequenos ajustes evitam lesões graves.'},
+  {cat:'Biossegurança',icon:'🧴',txt:'Ao manusear produtos químicos, verifique a ficha FISPQ antes. O descarte incorreto coloca toda a equipe em risco.'},
+  {cat:'Saúde Mental',icon:'🧠',txt:'Reconheça os sinais de assédio moral no ambiente de trabalho: humilhações repetidas, isolamento e sobrecarga intencional. A CIPAA está aqui para ouvir.'},
+  {cat:'Segurança',icon:'🔥',txt:'Nunca bloqueie saídas de emergência ou extintores com materiais ou mobiliário, mesmo que temporariamente.'},
+  {cat:'Saúde Mental',icon:'🌿',txt:'Pausas regulares não são preguiça — são produtividade. 5 minutos a cada hora reduzem estresse e aumentam o foco.'},
+  {cat:'Ergonomia',icon:'👁️',txt:'A cada 20 minutos de tela, olhe para algo distante por 20 segundos. Funcionários que passam horas no computador devem aplicar essa regra.'},
+  {cat:'Segurança',icon:'💧',txt:'Em caso de acidente com produto químico: lave imediatamente com água por 15 minutos e comunique ao responsável e à CIPAA.'},
+  {cat:'Assédio',icon:'🛡️',txt:'Todo funcionário tem direito a um ambiente de trabalho livre de assédio sexual e moral. A CIPAA garante sigilo nas denúncias.'},
+  {cat:'Biossegurança',icon:'🩺',txt:'Funcionários da área da saúde devem manter vacinação em dia: Hepatite B, Tríplice Viral e dT são essenciais para proteção coletiva.'},
+  {cat:'Segurança',icon:'🚶',txt:'Em situações de evacuação: siga a sinalização, use escadas, não corra e nunca retorne para buscar pertences pessoais.'},
+  {cat:'Saúde Mental',icon:'😤',txt:'Conflitos no ambiente de trabalho devem ser registrados. A CIPAA pode mediar situações antes que se tornem crises maiores.'},
+];
+
+let tipIdx = 0;
+function buildDots(){
+  const el = document.getElementById('aw-dots');
+  el.innerHTML = TIPS.map((_,i)=>`<div class="aw-dot${i===0?' on':''}" id="aw-d${i}" onclick="jumpTip(${i})"></div>`).join('');
+}
+function updateTip(){
+  const elTxt = document.getElementById('aw-text');
+  const elCat = document.getElementById('aw-cat');
+  const elBadge = document.getElementById('aw-badge');
+  elTxt.classList.add('fade');
+  setTimeout(()=>{
+    const t = TIPS[tipIdx];
+    elTxt.textContent = t.txt;
+    elCat.textContent = t.cat;
+    elBadge.textContent = t.icon;
+    elTxt.classList.remove('fade');
+    document.querySelectorAll('.aw-dot').forEach((d,i)=>d.classList.toggle('on',i===tipIdx));
+    tipIdx=(tipIdx+1)%TIPS.length;
+  },440);
+}
+function jumpTip(i){tipIdx=i;clearInterval(tipTimer);updateTip();tipTimer=setInterval(updateTip,8000);}
+buildDots();updateTip();
+let tipTimer=setInterval(updateTip,8000);
+
+// ==================== MEMBERS ====================
+const RL={presidente:'rp',vice:'rv',secretario:'rs',membro:'rm'};
+const RN={presidente:'Presidente',vice:'Vice-Presidente',secretario:'Secretária(o)',membro:'Membro'};
+function initials(n){return n.split(' ').filter(w=>w.length>2).slice(0,2).map(w=>w[0]).join('').toUpperCase()||n.slice(0,2).toUpperCase();}
+
+function renderMembers(){
+  document.getElementById('grid-tec').innerHTML = S.members.map(m=>`
+    <div class="member-card">
+      <button class="edit-fab" onclick="openEditMember('${m.id}')" title="Editar">✏️</button>
+      <div class="member-avatar">${initials(m.name)}</div>
+      <div class="role-badge ${RL[m.role]}">${RN[m.role]}</div>
+      <div class="member-name">${m.name}</div>
+      <div class="member-pos">${m.pos}</div>
+    </div>`).join('');
+}
+function switchTab(g){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+function openEditMember(id){
+  // Routed to admin-guarded version defined below
+  if(!adminMode){toast('🔐 Faça login como administrador para editar.');return;}
+  const m=S.members.find(x=>x.id===id);if(!m)return;
+  S.editM=id;
+  document.getElementById('em-id').value=id;
+  document.getElementById('em-name').value=m.name;
+  document.getElementById('em-pos').value=m.pos;
+  document.getElementById('em-role').value=m.role;
+  openModal('m-modal');
+}
+async function saveMember(){
+  const id  = S.editM;
+  const idx = S.members.findIndex(x=>x.id===id);
+  const updated = {
+    name: document.getElementById('em-name').value,
+    pos:  document.getElementById('em-pos').value,
+    role: document.getElementById('em-role').value,
+  };
+  try {
+    await setDoc(doc(db,'members',id), updated, {merge:true});
+    Object.assign(S.members[idx], updated);
+    renderMembers();
+    closeModal('m-modal');
+    toast('✅ Membro salvo no Firebase!');
+  } catch(e) {
+    toast('❌ Erro ao salvar. Verifique a conexão.');
+    console.error(e);
+  }
+}
+
+// ==================== DOCUMENTOS ====================
+function renderDocumentos(){
+  const el = document.getElementById('doc-list');
+  if(!S.documentos.length){
+    el.innerHTML=`<div style="text-align:center;padding:2rem;color:rgba(255,255,255,0.25);font-size:0.82rem;">Nenhum documento publicado ainda.</div>`;
+    return;
+  }
+  el.innerHTML = S.documentos.map(d=>`
+    <div class="doc-item">
+      <div class="doc-ico di-pdf">📄</div>
+      <div style="flex:1">
+        <div class="doc-name">${d.nome}</div>
+        <div class="doc-info">Google Drive</div>
+      </div>
+      <a href="${d.url}" target="_blank" rel="noopener" style="
+        font-size:0.75rem;padding:0.3rem 0.75rem;
+        border-radius:var(--r1);border:1px solid rgba(0,232,122,0.25);
+        color:var(--acc);text-decoration:none;white-space:nowrap;
+        background:rgba(0,232,122,0.06);
+      ">🔗 Abrir</a>
+    </div>`).join('');
+}
+const TC={r:'dt-r',s:'dt-s',t:'dt-t',i:'dt-i'};
+function renderEvents(list,el){
+  document.getElementById(el).innerHTML=S[list].map(e=>`
+    <div class="ev-item">
+      <div class="ev-date"><div class="ev-day">${String(e.day).padStart(2,'0')}</div><div class="ev-mon">${e.mon}</div></div>
+      <div class="ev-sep"></div>
+      <div class="ev-tdot ${TC[e.type]}"></div>
+      <div style="flex:1">
+        <div class="ev-name">${e.name}</div>
+        <div class="ev-loc">📍 ${e.loc}</div>
+        <div class="ev-time">⏰ ${e.time}</div>
+      </div>
+      <button class="ev-edit-btn" onclick="openEditEvent('${e.id}','${list}')">✏️</button>
+    </div>`).join('');
+}
+function openEditEvent(id,list){
+  // Routed to admin-guarded version defined below
+  if(!adminMode){toast('🔐 Faça login como administrador para editar.');return;}
+  const ev=S[list].find(x=>x.id===id);if(!ev)return;
+  S.editE={id,list};
+  document.getElementById('ee-id').value=id;
+  document.getElementById('ee-list').value=list;
+  document.getElementById('ee-day').value=ev.day;
+  document.getElementById('ee-mon').value=ev.mon;
+  document.getElementById('ee-time').value=ev.time;
+  document.getElementById('ee-name').value=ev.name;
+  document.getElementById('ee-loc').value=ev.loc;
+  openModal('e-modal');
+}
+async function saveEvent(){
+  const {id,list} = S.editE;
+  const idx = S[list].findIndex(x=>x.id===id);
+  const updated = {
+    day:  parseInt(document.getElementById('ee-day').value),
+    mon:  document.getElementById('ee-mon').value.toUpperCase(),
+    time: document.getElementById('ee-time').value,
+    name: document.getElementById('ee-name').value,
+    loc:  document.getElementById('ee-loc').value,
+  };
+  try {
+    await setDoc(doc(db, list, id), updated, {merge:true});
+    Object.assign(S[list][idx], updated);
+    renderEvents(list, list==='reunions'?'ev-reunions':'ev-inspections');
+    closeModal('e-modal');
+    toast('✅ Evento salvo no Firebase!');
+  } catch(e) {
+    toast('❌ Erro ao salvar. Verifique a conexão.');
+    console.error(e);
+  }
+}
+
+// ==================== REPORTS ====================
+function selType(btn,t){
+  document.querySelectorAll('.rtype-btn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');S.rType=t;
+}
+async function submitReport(){
+  const loc  = document.getElementById('r-local').value.trim();
+  const desc = document.getElementById('r-desc').value.trim();
+  if(!loc||!desc){toast('⚠️ Preencha o local/setor e a descrição.');return;}
+  const name = document.getElementById('r-name').value.trim();
+  try {
+    await addDoc(collection(db,'relatos'),{
+      tipo:      S.rType,
+      local:     loc,
+      descricao: desc,
+      nome:      name||'Anônimo',
+      criadoEm:  serverTimestamp(),
+    });
+    document.getElementById('r-local').value='';
+    document.getElementById('r-desc').value='';
+    document.getElementById('r-name').value='';
+    toast('✅ Relato enviado e salvo no Firebase!');
+  } catch(e){
+    toast('❌ Erro ao enviar relato. Verifique a conexão.');
+    console.error(e);
+  }
+}
+
+// ==================== DOCS / UPLOAD ====================
+function docDl(name){toast(`📄 Preparando download: ${name}`);}
+
+const icons={pdf:'📄',doc:'📝',docx:'📝',jpg:'🖼️',jpeg:'🖼️',png:'🖼️'};
+function getIcon(name){const ext=name.split('.').pop().toLowerCase();return icons[ext]||'📎';}
+function fmtSize(b){if(b<1024)return b+'B';if(b<1048576)return(b/1024).toFixed(0)+'KB';return(b/1048576).toFixed(1)+'MB';}
+
+function handleFiles(files){
+  Array.from(files).forEach(f=>{
+    if(S.uploads.find(u=>u.name===f.name))return;
+    S.uploads.push({name:f.name,size:f.size,file:f});
+  });
+  renderUploads();
+}
+
+function renderUploads(){
+  const ul=document.getElementById('upload-list');
+  const btn=document.getElementById('btn-upload');
+  if(S.uploads.length===0){ul.innerHTML='';btn.style.display='none';return;}
+  ul.innerHTML=S.uploads.map((u,i)=>`
+    <div class="upl-item">
+      <span class="upl-ico">${getIcon(u.name)}</span>
+      <span class="upl-name" title="${u.name}">${u.name}</span>
+      <span class="upl-size">${fmtSize(u.size)}</span>
+      <button class="upl-rm" onclick="removeUpload(${i})">✕</button>
+    </div>`).join('');
+  btn.style.display='block';
+}
+
+function removeUpload(i){S.uploads.splice(i,1);renderUploads();}
+
+async function confirmUpload(){
+  if(S.uploads.length===0)return;
+  const btn=document.getElementById('btn-upload');
+  btn.textContent='⏳ Enviando…';
+  btn.disabled=true;
+  const results=[];
+  for(const u of S.uploads){
+    try{
+      const storageRef=ref(storage,`documentos/${Date.now()}_${u.name}`);
+      const snap=await uploadBytes(storageRef,u.file);
+      const url=await getDownloadURL(snap.ref);
+      await addDoc(collection(db,'documentos'),{
+        nome:u.name,
+        tamanho:u.size,
+        url,
+        enviadoEm:serverTimestamp(),
+      });
+      results.push(u.name);
+    }catch(e){
+      console.error('Upload error:',e);
+      toast(`❌ Falha ao enviar: ${u.name}`);
+    }
+  }
+  S.uploads=[];renderUploads();
+  btn.textContent='📤 Enviar para a CIPAA';
+  btn.disabled=false;
+  if(results.length) toast(`📤 ${results.length} arquivo(s) enviado(s) com sucesso!`);
+}
+
+// drag & drop
+const uz=document.getElementById('upload-zone');
+uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag');handleFiles(e.dataTransfer.files);});
+
+// ==================== MODALS ====================
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',function(e){if(e.target===this)this.classList.remove('open');}));
+
+// ==================== ADMIN AUTH ====================
+// Senha definida aqui — altere conforme necessário
+const ADMIN_HASH = '3f9ec3b08941b69017fd253e50d2cfd83812f6e0'; // SHA-1 de "cipaa2026"
+
+async function hashPassword(pw){
+  const buf=await crypto.subtle.digest('SHA-1',new TextEncoder().encode(pw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+let adminMode = false;
+
+function handleAdminBtn(){
+  if(adminMode){
+    openModal('admin-logout-modal');
+  } else {
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-error').style.display='none';
+    openModal('admin-modal');
+    setTimeout(()=>document.getElementById('admin-pw-input').focus(),200);
+  }
+}
+
+async function doAdminLogin(){
+  const pw = document.getElementById('admin-pw-input').value;
+  if(!pw){document.getElementById('admin-error').style.display='block';return;}
+  const hash = await hashPassword(pw);
+  if(hash === ADMIN_HASH){
+    adminMode = true;
+    document.body.classList.add('admin-mode');
+    document.getElementById('admin-bar').classList.add('show');
+    document.getElementById('admin-toggle-btn').classList.add('active');
+    document.getElementById('admin-toggle-btn').textContent='⚙️';
+    document.getElementById('doc-upload-area').style.display='block';
+    closeModal('admin-modal');
+    toast('✅ Modo administrador ativado!');
+  } else {
+    document.getElementById('admin-error').style.display='block';
+    document.getElementById('admin-pw-input').value='';
+    document.getElementById('admin-pw-input').focus();
+  }
+}
+
+function doAdminLogout(){
+  adminMode = false;
+  document.body.classList.remove('admin-mode');
+  document.getElementById('admin-bar').classList.remove('show');
+  document.getElementById('admin-toggle-btn').classList.remove('active');
+  document.getElementById('admin-toggle-btn').textContent='🔐';
+  document.getElementById('doc-upload-area').style.display='none';
+  closeModal('admin-logout-modal');
+  toast('🔒 Sessão administrativa encerrada.');
+}
+
+async function addDocumento(){
+  if(!adminMode){toast('🔐 Faça login como administrador.');return;}
+  const nome = document.getElementById('doc-nome').value.trim();
+  const url  = document.getElementById('doc-url').value.trim();
+  if(!nome||!url){toast('⚠️ Preencha o nome e o link do documento.');return;}
+  try{
+    const docRef = await addDoc(collection(db,'documentos'),{
+      nome,
+      url,
+      criadoEm: serverTimestamp(),
+    });
+    S.documentos.push({id:docRef.id, nome, url});
+    renderDocumentos();
+    document.getElementById('doc-nome').value='';
+    document.getElementById('doc-url').value='';
+    toast('✅ Documento publicado com sucesso!');
+  }catch(e){
+    toast('❌ Erro ao publicar. Verifique a conexão.');
+    console.error(e);
+  }
+}
+
+function togglePwVis(){
+  const inp=document.getElementById('admin-pw-input');
+  const eye=document.getElementById('pw-eye');
+  if(inp.type==='password'){inp.type='text';eye.textContent='🙈';}
+  else{inp.type='password';eye.textContent='👁️';}
+}
+
+// Guard: edit buttons are shown/hidden via CSS .admin-mode class
+
+// ==================== BUBBLES ====================
+(function(){
+  const canvas = document.getElementById('bubble-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const COLORS = [
+    'rgba(0,232,122,',
+    'rgba(46,204,138,',
+    'rgba(26,122,85,',
+    'rgba(17,87,64,',
+    'rgba(0,200,100,',
+  ];
+
+  let bubbles = [];
+  let W, H;
+
+  function resize(){
+    W = canvas.width  = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  function randBetween(a, b){ return a + Math.random() * (b - a); }
+
+  function createBubble(forceBottom){
+    const r = randBetween(4, 22);
+    return {
+      x: randBetween(r, W - r),
+      y: forceBottom ? H + r + randBetween(0, H) : randBetween(-r, H + r),
+      r: r,
+      speed: randBetween(0.3, 1.1),
+      opacity: randBetween(0.08, 0.32),
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      wobble: randBetween(0, Math.PI * 2),
+      wobbleSpeed: randBetween(0.008, 0.025),
+      wobbleAmp: randBetween(0.4, 1.8),
+      // slight size pulse
+      pulse: randBetween(0, Math.PI * 2),
+      pulseSpeed: randBetween(0.01, 0.03),
+    };
+  }
+
+  // Initialise pool
+  const COUNT = Math.min(60, Math.floor(W * H / 18000));
+  for(let i = 0; i < COUNT; i++) bubbles.push(createBubble(false));
+
+  function draw(){
+    ctx.clearRect(0, 0, W, H);
+
+    bubbles.forEach(b => {
+      // Move upward with gentle horizontal wobble
+      b.y -= b.speed;
+      b.wobble += b.wobbleSpeed;
+      b.pulse  += b.pulseSpeed;
+      const xOff = Math.sin(b.wobble) * b.wobbleAmp;
+      const rPulse = b.r + Math.sin(b.pulse) * (b.r * 0.08);
+
+      // Recycle when off top
+      if(b.y + rPulse < 0){
+        Object.assign(b, createBubble(true));
+      }
+
+      const cx = b.x + xOff;
+      const cy = b.y;
+
+      // Outer glow
+      const grd = ctx.createRadialGradient(cx - rPulse*0.3, cy - rPulse*0.3, rPulse*0.1, cx, cy, rPulse);
+      grd.addColorStop(0,   b.color + (b.opacity * 0.9).toFixed(2) + ')');
+      grd.addColorStop(0.6, b.color + (b.opacity * 0.4).toFixed(2) + ')');
+      grd.addColorStop(1,   b.color + '0)');
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, rPulse, 0, Math.PI * 2);
+      ctx.fillStyle = grd;
+      ctx.fill();
+
+      // Crisp ring
+      ctx.beginPath();
+      ctx.arc(cx, cy, rPulse, 0, Math.PI * 2);
+      ctx.strokeStyle = b.color + (b.opacity * 0.55).toFixed(2) + ')';
+      ctx.lineWidth = 0.8;
+      ctx.stroke();
+
+      // Tiny highlight
+      ctx.beginPath();
+      ctx.arc(cx - rPulse * 0.28, cy - rPulse * 0.28, rPulse * 0.22, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + (b.opacity * 0.6).toFixed(2) + ')';
+      ctx.fill();
+    });
+
+    requestAnimationFrame(draw);
+  }
+
+  draw();
+})();
+let tt;
+function toast(msg){
+  clearTimeout(tt);
+  const el=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  el.classList.add('on');
+  tt=setTimeout(()=>el.classList.remove('on'),4000);
+}
+
+// ==================== EXPOSE TO GLOBAL (module scope fix) ====================
+Object.assign(window,{
+  switchTab, openEditMember, saveMember,
+  openEditEvent, saveEvent,
+  selType, submitReport,
+  handleFiles, renderUploads, removeUpload, confirmUpload,
+  openModal, closeModal,
+  handleAdminBtn, doAdminLogin, doAdminLogout, togglePwVis,
+  docDl, jumpTip, addDocumento, renderDocumentos,
+});
+</script>
+</body>
+</html>
