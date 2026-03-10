@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIPAA FMC — Portal do Funcionário</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* MANTIDOS TODOS OS SEUS ESTILOS ORIGINAIS */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;font-size:16px;}
+:root{
+  --g0:#062419; --g1:#0a3d2e; --g2:#115740; --g3:#1a7a55; --g4:#2ecc8a; --g5:#d4f5e9; --g6:#eaf7f2;
+  --white:#ffffff; --off:#f5fbf8; --td:#0d1f18; --tm:#2d5a47; --tl:#7ab89a; --acc:#00ffa3;
+}
+body{font-family:'DM Sans',sans-serif;background-color:var(--g0);color:var(--white);line-height:1.6;overflow-x:hidden;}
+canvas#canvas-particles{position:fixed;top:0;left:0;width:100%;height:100%;z-index:-1;background:radial-gradient(circle at 50% 50%, #0a3d2e 0%, #062419 100%);}
+header{padding:40px 5%;display:flex;justify-content:space-between;align-items:center;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:1.8rem;letter-spacing:-1px;color:var(--g4);display:flex;align-items:center;gap:10px;}
+.logo span{color:var(--white);font-weight:400;font-size:1rem;opacity:0.7;}
+.nav-actions{display:flex;gap:15px;}
+.btn-icon{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--white);width:45px;height:45px;border-radius:12px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:0.3s;}
+.btn-icon:hover{background:var(--g4);color:var(--g0);transform:translateY(-3px);}
+.hero{padding:60px 5% 100px;text-align:center;max-width:900px;margin:0 auto;}
+.badge{display:inline-block;padding:6px 16px;background:rgba(46,204,138,0.1);border:1px solid rgba(46,204,138,0.2);border-radius:100px;color:var(--g4);font-size:0.85rem;font-weight:600;margin-bottom:24px;}
+h1{font-family:'Syne',sans-serif;font-size:4rem;font-weight:800;line-height:1;margin-bottom:30px;letter-spacing:-2px;}
+h1 em{font-style:normal;color:var(--g4);}
+.hero p{font-size:1.2rem;color:var(--tl);max-width:600px;margin:0 auto 40px;}
+.grid-actions{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:25px;padding:0 5% 100px;}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:24px;padding:40px;transition:0.4s;position:relative;overflow:hidden;backdrop-filter:blur(10px);}
+.card:hover{border-color:var(--g4);transform:translateY(-10px);background:rgba(255,255,255,0.05);}
+.card h3{font-family:'Syne',sans-serif;font-size:1.5rem;margin-bottom:15px;}
+.card p{color:var(--tl);font-size:0.95rem;margin-bottom:30px;}
+.btn-g{display:inline-flex;align-items:center;padding:14px 28px;background:var(--g4);color:var(--g0);border-radius:14px;text-decoration:none;font-weight:700;transition:0.3s;border:none;cursor:pointer;width:100%;justify-content:center;}
+.btn-g:hover{background:var(--white);transform:scale(1.02);}
+#toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%) translateY(100px);background:var(--white);color:var(--g0);padding:16px 30px;border-radius:16px;font-weight:700;z-index:1000;transition:0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);display:flex;align-items:center;gap:12px;box-shadow:0 20px 40px rgba(0,0,0,0.4);}
+#toast.show{transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<canvas id="canvas-particles"></canvas>
+
+<header>
+  <div class="logo">CIPAA <span>FMC</span></div>
+  <div class="nav-actions">
+    <button class="btn-icon" onclick="fazerLogin()" title="Acesso Restrito">🔐</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="badge">SEGURANÇA DO TRABALHO & ASSÉDIO</div>
+  <h1>Cuidar de você é o nosso <em>dever.</em></h1>
+  <p>Portal oficial da CIPAA FMC para relatos sigilosos, documentos e suporte direto ao funcionário.</p>
+</section>
+
+<div class="grid-actions">
+  <div class="card">
+    <div class="badge" style="background:rgba(255,70,70,0.1); color:#ff4646; border-color:rgba(255,70,70,0.2)">CANAL SEGURO</div>
+    <h3>Relato de Acidente</h3>
+    <p>Comunique ocorrências ou condições inseguras de forma rápida para nossa equipe técnica.</p>
+    <button class="btn-g" onclick="enviarRelato('Acidente')">Relatar Agora</button>
+  </div>
+
+  <div class="card">
+    <div class="badge" style="background:rgba(120,80,255,0.1); color:#9d7aff; border-color:rgba(120,80,255,0.2)">100% SIGILOSO</div>
+    <h3>Relato de Assédio</h3>
+    <p>Denuncie comportamentos inadequados. Garantimos o anonimato e o tratamento profissional.</p>
+    <button class="btn-g" onclick="enviarRelato('Assédio')" style="background:#9d7aff; color:#fff">Enviar Denúncia</button>
+  </div>
+
+  <div class="card">
+    <h3>Documentos & Atas</h3>
+    <p>Acesse o cronograma de reuniões, atas da CIPAA e informativos de segurança.</p>
+    <button class="btn-g" style="background:transparent; color:var(--white); border:1px solid rgba(255,255,255,0.2)">Abrir Biblioteca</button>
+  </div>
+</div>
+
+<div id="toast">
+  <span id="toast-msg">Mensagem enviada!</span>
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyB6gFwTcbupvghl3zMeM4VZm0PIu2y_jVE",
+    authDomain: "cipaa-7a29e.firebaseapp.com",
+    projectId: "cipaa-7a29e",
+    storageBucket: "cipaa-7a29e.firebasestorage.app",
+    messagingSenderId: "34051039379",
+    appId: "1:34051039379:web:fa022cab4e896bdceb2d66",
+    measurementId: "G-MP6Z204GX6"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  // LOGIN PARA ADMIN (🔐)
+  window.fazerLogin = async () => {
+    const email = prompt("E-mail do Administrador:");
+    const senha = prompt("Senha:");
+    if (!email || !senha) return;
+
+    try {
+      await signInWithEmailAndPassword(auth, email, senha);
+      toast("Acesso de Administrador Liberado!");
+    } catch (e) {
+      toast("Credenciais Inválidas.");
+    }
+  };
+
+  // ENVIO DE RELATOS SEGUROS
+  window.enviarRelato = async (tipo) => {
+    const msg = prompt(`Descreva o ocorrido (${tipo}):\nO sigilo é garantido pela CIPAA.`);
+    if (!msg || msg.trim().length < 5) {
+      toast("Por favor, detalhe mais o ocorrido.");
+      return;
+    }
+
+    try {
+      await addDoc(collection(db, "relatos"), {
+        tipo: tipo,
+        descricao: msg,
+        data: serverTimestamp(),
+        status: "Pendente"
+      });
+      toast("Relato enviado com sucesso!");
+    } catch (e) {
+      console.error(e);
+      toast("Erro ao conectar com o banco de dados.");
+    }
+  };
+
+  // TOAST NOTIFICATION
+  let tt;
+  function toast(msg){
+    clearTimeout(tt);
+    const el = document.getElementById('toast');
+    document.getElementById('toast-msg').textContent = msg;
+    el.classList.add('show');
+    tt = setTimeout(() => el.classList.remove('show'), 4000);
+  }
+</script>
+
+<script>
+/* MANTIDAS TODAS AS SUAS ANIMAÇÕES DE PARTÍCULAS ORIGINAIS */
+(function() {
+  const canvas = document.getElementById('canvas-particles');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+
+  function init() {
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+    particles = [];
+    for (let i = 0; i < 40; i++) {
+      particles.push({
+        x: Math.random() * w, y: Math.random() * h,
+        vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
+        r: Math.random() * 3 + 1, opacity: Math.random() * 0.5 + 0.2,
+        color: 'rgba(46, 204, 138, '
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
+    particles.forEach(b => {
+      b.x += b.vx; b.y += b.vy;
+      if (b.x < 0 || b.x > w) b.vx *= -1;
+      if (b.y < 0 || b.y > h) b.vy *= -1;
+      
+      let cx = b.x, cy = b.y, rPulse = b.r + Math.sin(Date.now() * 0.002) * 2;
+      let grd = ctx.createRadialGradient(cx, cy, rPulse * 0.1, cx, cy, rPulse);
+      grd.addColorStop(0, b.color + (b.opacity * 0.9).toFixed(2) + ')');
+      grd.addColorStop(1, b.color + '0)');
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, rPulse, 0, Math.PI * 2);
+      ctx.fillStyle = grd; ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize', init);
+  init(); draw();
+})();
+</script>
+</body>
+</html>
