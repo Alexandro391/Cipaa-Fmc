@@ -6,7 +6,7 @@
 <title>CIPAA FMC — Portal do Funcionário</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <style>
-/* MANTIDOS TODOS OS SEUS ESTILOS ORIGINAIS */
+/* ===== SEU ESTILO ORIGINAL INTEGRAL ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;font-size:16px;}
 :root{
@@ -44,7 +44,7 @@ h1 em{font-style:normal;color:var(--g4);}
 <header>
   <div class="logo">CIPAA <span>FMC</span></div>
   <div class="nav-actions">
-    <button class="btn-icon" onclick="fazerLogin()" title="Acesso Restrito">🔐</button>
+    <button class="btn-icon" onclick="fazerLogin()">🔐</button>
   </div>
 </header>
 
@@ -76,13 +76,11 @@ h1 em{font-style:normal;color:var(--g4);}
   </div>
 </div>
 
-<div id="toast">
-  <span id="toast-msg">Mensagem enviada!</span>
-</div>
+<div id="toast"><span id="toast-msg">Mensagem enviada!</span></div>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
   import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -99,95 +97,72 @@ h1 em{font-style:normal;color:var(--g4);}
   const auth = getAuth(app);
   const db = getFirestore(app);
 
-  // LOGIN PARA ADMIN (🔐)
-  window.fazerLogin = async () => {
-    const email = prompt("E-mail do Administrador:");
-    const senha = prompt("Senha:");
-    if (!email || !senha) return;
+  window.enviarRelato = async (tipo) => {
+    const desc = prompt(`Relato de ${tipo}: Descreva o ocorrido.`);
+    if(!desc) return;
+    try {
+      await addDoc(collection(db, "relatos"), { tipo, desc, data: serverTimestamp() });
+      toast("Relato enviado com sucesso!");
+    } catch(e) { toast("Erro ao enviar relato."); }
+  };
 
+  window.fazerLogin = async () => {
+    const email = prompt("E-mail admin:");
+    const senha = prompt("Senha:");
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      toast("Acesso de Administrador Liberado!");
-    } catch (e) {
-      toast("Credenciais Inválidas.");
-    }
+      toast("Admin Autenticado!");
+    } catch(e) { toast("Falha no login."); }
   };
-
-  // ENVIO DE RELATOS SEGUROS
-  window.enviarRelato = async (tipo) => {
-    const msg = prompt(`Descreva o ocorrido (${tipo}):\nO sigilo é garantido pela CIPAA.`);
-    if (!msg || msg.trim().length < 5) {
-      toast("Por favor, detalhe mais o ocorrido.");
-      return;
-    }
-
-    try {
-      await addDoc(collection(db, "relatos"), {
-        tipo: tipo,
-        descricao: msg,
-        data: serverTimestamp(),
-        status: "Pendente"
-      });
-      toast("Relato enviado com sucesso!");
-    } catch (e) {
-      console.error(e);
-      toast("Erro ao conectar com o banco de dados.");
-    }
-  };
-
-  // TOAST NOTIFICATION
-  let tt;
-  function toast(msg){
-    clearTimeout(tt);
-    const el = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    el.classList.add('show');
-    tt = setTimeout(() => el.classList.remove('show'), 4000);
-  }
 </script>
 
 <script>
-/* MANTIDAS TODAS AS SUAS ANIMAÇÕES DE PARTÍCULAS ORIGINAIS */
-(function() {
-  const canvas = document.getElementById('canvas-particles');
-  const ctx = canvas.getContext('2d');
-  let w, h, particles = [];
-
-  function init() {
-    w = canvas.width = window.innerWidth;
-    h = canvas.height = window.innerHeight;
-    particles = [];
-    for (let i = 0; i < 40; i++) {
+/* ===== SEU CANVAS ORIGINAL COM ANÉIS BRILHANTES ===== */
+(function(){
+  const canvas=document.getElementById('canvas-particles');
+  const ctx=canvas.getContext('2d');
+  let w,h,particles=[];
+  function init(){
+    w=canvas.width=window.innerWidth; h=canvas.height=window.innerHeight;
+    particles=[];
+    for(let i=0;i<40;i++){
       particles.push({
-        x: Math.random() * w, y: Math.random() * h,
-        vx: (Math.random() - 0.5) * 0.4, vy: (Math.random() - 0.5) * 0.4,
-        r: Math.random() * 3 + 1, opacity: Math.random() * 0.5 + 0.2,
-        color: 'rgba(46, 204, 138, '
+        x:Math.random()*w, y:Math.random()*h,
+        vx:(Math.random()-0.5)*0.4, vy:(Math.random()-0.5)*0.4,
+        r:Math.random()*3+1, opacity:Math.random()*0.5+0.2,
+        color:'rgba(46, 204, 138, '
       });
     }
   }
-
-  function draw() {
-    ctx.clearRect(0, 0, w, h);
-    particles.forEach(b => {
-      b.x += b.vx; b.y += b.vy;
-      if (b.x < 0 || b.x > w) b.vx *= -1;
-      if (b.y < 0 || b.y > h) b.vy *= -1;
-      
-      let cx = b.x, cy = b.y, rPulse = b.r + Math.sin(Date.now() * 0.002) * 2;
-      let grd = ctx.createRadialGradient(cx, cy, rPulse * 0.1, cx, cy, rPulse);
-      grd.addColorStop(0, b.color + (b.opacity * 0.9).toFixed(2) + ')');
-      grd.addColorStop(1, b.color + '0)');
-
-      ctx.beginPath();
-      ctx.arc(cx, cy, rPulse, 0, Math.PI * 2);
-      ctx.fillStyle = grd; ctx.fill();
+  function draw(){
+    ctx.clearRect(0,0,w,h);
+    particles.forEach(b=>{
+      b.x+=b.vx; b.y+=b.vy;
+      if(b.x<0||b.x>w) b.vx*=-1; if(b.y<0||b.y>h) b.vy*=-1;
+      let cx=b.x, cy=b.y, rPulse=b.r+Math.sin(Date.now()*0.002)*2;
+      let grd=ctx.createRadialGradient(cx,cy,rPulse*0.1,cx,cy,rPulse);
+      grd.addColorStop(0, b.color+(b.opacity*0.9).toFixed(2)+')');
+      grd.addColorStop(0.6, b.color+(b.opacity*0.4).toFixed(2)+')');
+      grd.addColorStop(1, b.color+'0)');
+      ctx.beginPath(); ctx.arc(cx,cy,rPulse,0,Math.PI*2);
+      ctx.fillStyle=grd; ctx.fill();
+      ctx.beginPath(); ctx.arc(cx,cy,rPulse,0,Math.PI*2);
+      ctx.strokeStyle=b.color+(b.opacity*0.55).toFixed(2)+')';
+      ctx.lineWidth=0.8; ctx.stroke();
     });
     requestAnimationFrame(draw);
   }
-  window.addEventListener('resize', init);
-  init(); draw();
+  window.addEventListener('resize',init); init(); draw();
 })();
+
+let tt;
+function toast(msg){
+  clearTimeout(tt);
+  const el=document.getElementById('toast');
+  document.getElementById('toast-msg').textContent=msg;
+  el.classList.add('show');
+  tt=setTimeout(()=>el.classList.remove('show'),4000);
+}
 </script>
 </body>
 </html>
