@@ -6,7 +6,7 @@
 <title>CIPAA FMC — Portal do Funcionário</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
 <style>
-/* ===== SEU ESTILO ORIGINAL INTEGRAL ===== */
+/* ===== SEU ESTILO ORIGINAL SEM ALTERAÇÕES ===== */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 html{scroll-behavior:smooth;font-size:16px;}
 :root{
@@ -99,19 +99,11 @@ h1 em{font-style:normal;color:var(--g4);}
 
   window.enviarRelato = async (tipo) => {
     const desc = prompt(`Relato de ${tipo}: Descreva o ocorrido.`);
-    if(!desc || desc.trim().length < 5) {
-      toast("Por favor, detalhe um pouco mais.");
-      return;
-    }
+    if(!desc || desc.trim().length < 5) return;
     try {
-      await addDoc(collection(db, "relatos"), { 
-        tipo, 
-        descricao: desc, 
-        data: serverTimestamp(),
-        status: "Pendente" 
-      });
+      await addDoc(collection(db, "relatos"), { tipo, descricao: desc, data: serverTimestamp() });
       toast("Relato enviado com sucesso!");
-    } catch(e) { toast("Erro de conexão."); }
+    } catch(e) { toast("Erro ao enviar. Verifique sua conexão."); }
   };
 
   window.fazerLogin = async () => {
@@ -120,14 +112,14 @@ h1 em{font-style:normal;color:var(--g4);}
     if(!email || !senha) return;
     try {
       await signInWithEmailAndPassword(auth, email, senha);
-      toast("Sessão Admin Ativada!");
-    } catch(e) { toast("Acesso negado."); }
+      toast("Acesso Admin Liberado!");
+    } catch(e) { toast("Falha na autenticação."); }
   };
 </script>
 
 <script>
-/* ===== SEU CANVAS ORIGINAL DE BOLHAS ===== */
-(function(){
+/* ===== SEU SCRIPT DE ANIMAÇÃO ORIGINAL (BOLHAS E ANÉIS) ===== */
+(function() {
   const canvas = document.getElementById('canvas-particles');
   const ctx = canvas.getContext('2d');
   let w, h, bubbles = [];
@@ -149,42 +141,49 @@ h1 em{font-style:normal;color:var(--g4);}
     };
   }
 
-  function init(){
+  function init() {
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
-    bubbles = Array.from({length: 45}, () => createBubble());
+    bubbles = [];
+    for (let i = 0; i < 45; i++) bubbles.push(createBubble());
   }
 
-  function draw(){
-    ctx.clearRect(0,0,w,h);
+  function draw() {
+    ctx.clearRect(0, 0, w, h);
     bubbles.forEach(b => {
       b.x += b.vx; b.y += b.vy;
       b.wobble += b.wobbleSpeed;
       b.pulse += b.pulseSpeed;
-      
-      if(b.y + b.r < 0) Object.assign(b, createBubble(true));
 
-      const cx = b.x + Math.sin(b.wobble) * b.wobbleAmp;
-      const rPulse = b.r + Math.sin(b.pulse) * (b.r * 0.1);
+      const xOff = Math.sin(b.wobble) * b.wobbleAmp;
+      const rPulse = b.r + Math.sin(b.pulse) * (b.r * 0.08);
 
-      const grd = ctx.createRadialGradient(cx - rPulse*0.3, cy = b.y - rPulse*0.3, rPulse*0.1, cx, b.y, rPulse);
+      if (b.y + rPulse < 0) Object.assign(b, createBubble(true));
+
+      const cx = b.x + xOff;
+      const cy = b.y;
+
+      // Seu efeito de gradiente radial original
+      const grd = ctx.createRadialGradient(cx - rPulse * 0.3, cy - rPulse * 0.3, rPulse * 0.1, cx, cy, rPulse);
       grd.addColorStop(0, b.color + (b.opacity * 0.9).toFixed(2) + ')');
       grd.addColorStop(0.6, b.color + (b.opacity * 0.4).toFixed(2) + ')');
       grd.addColorStop(1, b.color + '0)');
 
       ctx.beginPath();
-      ctx.arc(cx, b.y, rPulse, 0, Math.PI * 2);
+      ctx.arc(cx, cy, rPulse, 0, Math.PI * 2);
       ctx.fillStyle = grd;
       ctx.fill();
 
+      // Seu anel (ring) original
       ctx.beginPath();
-      ctx.arc(cx, b.y, rPulse, 0, Math.PI * 2);
+      ctx.arc(cx, cy, rPulse, 0, Math.PI * 2);
       ctx.strokeStyle = b.color + (b.opacity * 0.55).toFixed(2) + ')';
       ctx.lineWidth = 0.8;
       ctx.stroke();
 
+      // Seu destaque (highlight) original
       ctx.beginPath();
-      ctx.arc(cx - rPulse*0.28, b.y - rPulse*0.28, rPulse*0.22, 0, Math.PI*2);
+      ctx.arc(cx - rPulse * 0.28, cy - rPulse * 0.28, rPulse * 0.22, 0, Math.PI * 2);
       ctx.fillStyle = 'rgba(255,255,255,' + (b.opacity * 0.6).toFixed(2) + ')';
       ctx.fill();
     });
@@ -192,7 +191,8 @@ h1 em{font-style:normal;color:var(--g4);}
   }
 
   window.addEventListener('resize', init);
-  init(); draw();
+  init();
+  draw();
 })();
 
 let tt;
