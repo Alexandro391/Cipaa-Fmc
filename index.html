@@ -1055,9 +1055,6 @@ const db   = getFirestore(app);
 // ==================== AUTH STATE ====================
 let adminMode = false;
 
-// Boot: load all data immediately (portal is public)
-bootData();
-
 // ==================== SEED DATA ====================
 const DEFAULT_MEMBERS = [
   {id:'m1',name:'Michelliny Correa Tavares Lopes',pos:'Corpo Técnico-Administrativo',role:'presidente'},
@@ -1102,6 +1099,9 @@ const DEFAULT_INSPECTIONS = [
 
 // ==================== STATE ====================
 const S = { members:[], reunions:[], inspections:[], documentos:[], editM:null, editE:null, rType:'risco' };
+
+// Boot: carrega dados imediatamente (portal público)
+bootData();
 
 async function loadOrSeed(colName, defaults){
   const snap = await getDocs(collection(db, colName));
