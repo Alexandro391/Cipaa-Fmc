@@ -31,6 +31,27 @@ html{scroll-behavior:smooth;}
   --warn:#f0b429;
   --info:#5b8dee;
   --r1:6px;--r2:10px;--r3:14px;--r4:20px;
+
+  /* Cores por seção */
+  --sec-members:       #2cb87a; /* verde FMC — identidade */
+  --sec-members-dim:   rgba(44,184,122,0.10);
+  --sec-members-b:     rgba(44,184,122,0.25);
+
+  --sec-agenda:        #3b9eff; /* azul petróleo — reuniões formais */
+  --sec-agenda-dim:    rgba(59,158,255,0.10);
+  --sec-agenda-b:      rgba(59,158,255,0.25);
+
+  --sec-sipat:         #f0b429; /* âmbar — evento/destaque */
+  --sec-sipat-dim:     rgba(240,180,41,0.10);
+  --sec-sipat-b:       rgba(240,180,41,0.25);
+
+  --sec-relatos:       #e05252; /* vermelho coral — urgência/prevenção */
+  --sec-relatos-dim:   rgba(224,82,82,0.10);
+  --sec-relatos-b:     rgba(224,82,82,0.25);
+
+  --sec-docs:          #a78bfa; /* roxo/índigo — arquivo/documentação */
+  --sec-docs-dim:      rgba(167,139,250,0.10);
+  --sec-docs-b:        rgba(167,139,250,0.25);
 }
 
 body{
@@ -232,15 +253,24 @@ body::after{
 /* ===== SECTION CARD ===== */
 .card{
   background:rgba(17,34,24,0.9);
-  border:1px solid rgba(44,184,122,0.22);
+  border:1px solid rgba(44,184,122,0.18);
   border-radius:var(--r3);
   padding:1.75rem;
   position:relative;overflow:hidden;
 }
 .card::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:1px;
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
   background:linear-gradient(90deg,transparent,var(--green-d),transparent);
 }
+/* section color overrides */
+.s-members{ border-color:var(--sec-members-b); }
+.s-members::before{ background:linear-gradient(90deg,transparent,var(--sec-members),transparent); }
+.s-agenda{  border-color:var(--sec-agenda-b); }
+.s-agenda::before{  background:linear-gradient(90deg,transparent,var(--sec-agenda),transparent); }
+.s-relatos{ border-color:var(--sec-relatos-b); }
+.s-relatos::before{ background:linear-gradient(90deg,transparent,var(--sec-relatos),transparent); }
+.s-docs{    border-color:var(--sec-docs-b); }
+.s-docs::before{    background:linear-gradient(90deg,transparent,var(--sec-docs),transparent); }
 
 /* section header */
 .sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.25rem;gap:1rem;}
@@ -250,6 +280,10 @@ body::after{
   background:var(--green-dim);border:1px solid var(--border);
   display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex-shrink:0;
 }
+.s-members .sh-icon{ background:var(--sec-members-dim);border-color:var(--sec-members-b); }
+.s-agenda  .sh-icon{ background:var(--sec-agenda-dim); border-color:var(--sec-agenda-b); }
+.s-relatos .sh-icon{ background:var(--sec-relatos-dim);border-color:var(--sec-relatos-b);}
+.s-docs    .sh-icon{ background:var(--sec-docs-dim);   border-color:var(--sec-docs-b);   }
 .sh-title{
   font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.2rem;color:var(--text);line-height:1;
 }
@@ -262,6 +296,9 @@ body::after{
   color:transparent;-webkit-text-stroke:1px rgba(44,184,122,0.07);
   pointer-events:none;line-height:1;
 }
+.s-agenda  .card-ghost{-webkit-text-stroke:1px rgba(59,158,255,0.07);}
+.s-relatos .card-ghost{-webkit-text-stroke:1px rgba(224,82,82,0.07);}
+.s-docs    .card-ghost{-webkit-text-stroke:1px rgba(167,139,250,0.07);}
 
 /* ===== GRIDS ===== */
 .two-col{display:grid;gap:1.25rem;grid-template-columns:1fr;}
@@ -319,16 +356,21 @@ body::after{
 .ev-list{display:flex;flex-direction:column;gap:0.5rem;}
 .ev-item{
   display:flex;align-items:center;gap:0.85rem;
-  background:rgba(44,184,122,0.05);border:1px solid rgba(44,184,122,0.18);
+  background:var(--sec-agenda-dim);border:1px solid var(--sec-agenda-b);
   border-radius:var(--r2);padding:0.75rem 0.85rem;transition:all 0.2s;
 }
-.ev-item:hover{background:rgba(44,184,122,0.12);border-color:var(--border-h);}
+.ev-item:hover{background:rgba(59,158,255,0.15);border-color:rgba(59,158,255,0.5);}
+/* SIPAT events override to amber */
+.ev-item.sipat-ev{background:var(--sec-sipat-dim);border-color:var(--sec-sipat-b);}
+.ev-item.sipat-ev:hover{background:rgba(240,180,41,0.18);border-color:rgba(240,180,41,0.5);}
 .ev-date{
   min-width:48px;text-align:center;flex-shrink:0;
-  background:var(--green-dim);border:1px solid var(--border);
+  background:var(--sec-agenda-dim);border:1px solid var(--sec-agenda-b);
   border-radius:var(--r1);padding:0.35rem 0.5rem;
 }
-.ev-day{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:1px;color:var(--green-l);line-height:1;}
+.ev-item.sipat-ev .ev-date{background:var(--sec-sipat-dim);border-color:var(--sec-sipat-b);}
+.ev-day{font-family:'Bebas Neue',sans-serif;font-size:1.35rem;letter-spacing:1px;color:var(--sec-agenda);line-height:1;}
+.ev-item.sipat-ev .ev-day{color:var(--sec-sipat);}
 .ev-mon{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--text-dim);text-transform:uppercase;}
 .ev-title{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.9rem;color:var(--text);line-height:1.2;}
 .ev-meta{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase;margin-top:3px;}
@@ -349,10 +391,10 @@ body::after{
 .add-ev-btn{
   font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:0.78rem;
   padding:0.35rem 0.9rem;border-radius:var(--r2);
-  background:var(--green-dim);border:1px solid var(--border);
-  color:var(--green-l);cursor:pointer;transition:all 0.2s;
+  background:var(--sec-sipat-dim);border:1px solid var(--sec-sipat-b);
+  color:var(--sec-sipat);cursor:pointer;transition:all 0.2s;
 }
-.add-ev-btn:hover{background:rgba(44,184,122,0.2);border-color:var(--green);}
+.add-ev-btn:hover{background:rgba(240,180,41,0.2);border-color:var(--sec-sipat);}
 
 /* ===== RELATOS ===== */
 .rtype-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0.5rem;margin-bottom:1rem;}
@@ -361,10 +403,10 @@ body::after{
   border-radius:var(--r2);padding:0.75rem 0.5rem;text-align:center;
   cursor:pointer;transition:all 0.2s;
 }
-.rt-btn:hover,.rt-btn.active{background:var(--green-dim);border-color:var(--green);}
+.rt-btn:hover,.rt-btn.active{background:var(--sec-relatos-dim);border-color:var(--sec-relatos);}
 .rt-ico{font-size:1.3rem;display:block;margin-bottom:4px;}
 .rt-lbl{font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:0.75rem;color:var(--text-dim);}
-.rt-btn.active .rt-lbl{color:var(--green-l);}
+.rt-btn.active .rt-lbl{color:var(--sec-relatos);}
 .rform{display:flex;flex-direction:column;gap:0.75rem;}
 .ff label{
   display:block;font-size:10px;font-weight:700;letter-spacing:3px;
@@ -381,19 +423,22 @@ body::after{
   outline:none;border-color:var(--green);
   background:rgba(44,184,122,0.05);
 }
+.s-relatos .ff input:focus,.s-relatos .ff textarea:focus,.s-relatos .ff select:focus{
+  border-color:var(--sec-relatos);background:var(--sec-relatos-dim);
+}
 .ff textarea{resize:vertical;min-height:90px;}
 .ff select option{background:var(--bg2);}
 .anon-row{display:flex;align-items:center;gap:0.6rem;}
 .anon-row input[type=checkbox]{accent-color:var(--green);width:15px;height:15px;cursor:pointer;}
 .anon-row label{font-size:0.82rem;color:var(--text-dim);cursor:pointer;margin-bottom:0!important;}
 .btn-prim{
-  background:linear-gradient(135deg,var(--green-d),var(--green));
+  background:linear-gradient(135deg,#a83232,var(--sec-relatos));
   color:#fff;border:none;border-radius:var(--r2);
   padding:0.75rem 1.5rem;
   font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1rem;
   cursor:pointer;transition:all 0.2s;width:100%;
 }
-.btn-prim:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(44,184,122,0.3);}
+.btn-prim:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(224,82,82,0.35);}
 .ouvidoria-card{
   background:rgba(91,141,238,0.07);
   border:1px solid rgba(91,141,238,0.2);
@@ -406,29 +451,30 @@ body::after{
 /* ===== DOCUMENTOS NR-5 ===== */
 .doc-section-label{
   font-size:10px;font-weight:700;letter-spacing:3px;
-  color:var(--green);text-transform:uppercase;
-  margin-bottom:0.6rem;opacity:0.8;
+  color:var(--sec-docs);text-transform:uppercase;
+  margin-bottom:0.6rem;opacity:0.9;
 }
+.s-agenda .doc-section-label{ color:var(--sec-agenda); }
 .doc-nr5-item{
   display:flex;align-items:center;gap:0.85rem;
   padding:0.75rem 0.9rem;border-radius:var(--r2);
-  border:1px solid rgba(44,184,122,0.18);background:rgba(44,184,122,0.04);
+  border:1px solid var(--sec-docs-b);background:var(--sec-docs-dim);
   transition:all 0.2s;margin-bottom:0.4rem;
 }
-.doc-nr5-item:hover{background:rgba(44,184,122,0.11);border-color:var(--border-h);}
-.doc-nr5-item.linked{border-color:rgba(44,184,122,0.4);}
+.doc-nr5-item:hover{background:rgba(167,139,250,0.16);border-color:rgba(167,139,250,0.5);}
+.doc-nr5-item.linked{border-color:rgba(167,139,250,0.55);background:rgba(167,139,250,0.12);}
 .doc-ico{font-size:1.2rem;flex-shrink:0;}
 .doc-name{font-family:'Rajdhani',sans-serif;font-weight:600;font-size:0.9rem;color:var(--text);}
-.doc-nr5-item.linked .doc-name{color:var(--green-l);}
+.doc-nr5-item.linked .doc-name{color:var(--sec-docs);}
 .doc-info{font-size:10px;font-weight:600;letter-spacing:1px;color:var(--text-dim);text-transform:uppercase;margin-top:2px;}
 .doc-actions{display:flex;gap:0.5rem;align-items:center;margin-left:auto;flex-shrink:0;}
 .doc-open-btn{
   font-family:'Bebas Neue',sans-serif;letter-spacing:1.5px;font-size:0.78rem;
   padding:0.3rem 0.85rem;border-radius:var(--r1);
-  border:1px solid rgba(44,184,122,0.35);color:var(--green-l);
-  text-decoration:none;background:var(--green-dim);transition:all 0.2s;white-space:nowrap;
+  border:1px solid var(--sec-docs-b);color:var(--sec-docs);
+  text-decoration:none;background:var(--sec-docs-dim);transition:all 0.2s;white-space:nowrap;
 }
-.doc-open-btn:hover{background:rgba(44,184,122,0.2);border-color:var(--green);}
+.doc-open-btn:hover{background:rgba(167,139,250,0.2);border-color:var(--sec-docs);}
 .doc-no-link{
   font-size:9px;font-weight:700;letter-spacing:1.5px;
   color:var(--text-dim);text-transform:uppercase;opacity:0.45;
@@ -663,7 +709,7 @@ body:not(.admin-mode) .add-ev-btn{display:none!important;}
 <main class="main">
 
   <!-- MEMBROS -->
-  <section id="membros" class="card">
+  <section id="membros" class="card s-members">
     <div class="card-ghost">MEMBROS</div>
     <div class="sh">
       <div class="sh-left">
@@ -683,7 +729,7 @@ body:not(.admin-mode) .add-ev-btn{display:none!important;}
   </section>
 
   <!-- AGENDA -->
-  <section id="agenda" class="card">
+  <section id="agenda" class="card s-agenda">
     <div class="card-ghost">AGENDA</div>
     <div class="sh">
       <div class="sh-left">
@@ -696,12 +742,12 @@ body:not(.admin-mode) .add-ev-btn{display:none!important;}
 
     </div>
     <!-- Reuniões -->
-    <div class="doc-section-label" style="margin-bottom:0.75rem;margin-top:0;">📅 Reuniões Ordinárias</div>
+    <div class="doc-section-label" style="margin-bottom:0.75rem;margin-top:0;color:var(--sec-agenda);">📅 Reuniões Ordinárias</div>
     <div class="ev-list" id="ev-reunions" style="margin-bottom:1.5rem;"></div>
 
     <!-- Eventos & SIPAT -->
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:0.75rem;">
-      <div class="doc-section-label" style="margin:0;">⭐ Eventos &amp; SIPAT 2026</div>
+      <div class="doc-section-label" style="margin:0;color:var(--sec-sipat);">⭐ Eventos &amp; SIPAT 2026</div>
       <button class="add-ev-btn" onclick="openModal('new-ev-modal')">+ EVENTO</button>
     </div>
     <div class="ev-list" id="ev-events"></div>
@@ -711,7 +757,7 @@ body:not(.admin-mode) .add-ev-btn{display:none!important;}
   <div class="two-col">
 
     <!-- RELATOS -->
-    <section id="relatos" class="card">
+    <section id="relatos" class="card s-relatos">
       <div class="card-ghost">RELATOS</div>
       <div class="sh">
         <div class="sh-left">
@@ -765,7 +811,7 @@ body:not(.admin-mode) .add-ev-btn{display:none!important;}
   </div><!-- end two-col relatos -->
 
   <!-- DOCUMENTOS — largura total -->
-  <section id="documentos" class="card">
+  <section id="documentos" class="card s-docs">
       <div class="card-ghost">DOCS</div>
       <div class="sh">
         <div class="sh-left">
@@ -1229,7 +1275,8 @@ function sortByDate(arr){
 }
 function evHTML(ev,col){
   const t=TYPE_MAP[ev.type]||TYPE_MAP.r;
-  return `<div class="ev-item">
+  const sipatCls=(ev.type==='s'||ev.type==='i'||ev.type==='t')?'sipat-ev':'';
+  return `<div class="ev-item ${sipatCls}">
     <div class="ev-date"><div class="ev-day">${ev.day}</div><div class="ev-mon">${ev.mon}</div></div>
     <div style="flex:1;min-width:0">
       <div class="ev-title">${ev.name}</div>
