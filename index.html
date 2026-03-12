@@ -265,7 +265,10 @@ body::after{
 
 /* ===== GRIDS ===== */
 .two-col{display:grid;gap:1.25rem;grid-template-columns:1fr;}
-@media(min-width:900px){.two-col{grid-template-columns:1fr 1fr;}}
+@media(min-width:768px){.two-col{grid-template-columns:1fr 1fr;}}
+/* Agenda sempre 2 colunas no desktop */
+.agenda-cols{display:grid;gap:1.25rem;grid-template-columns:1fr;}
+@media(min-width:768px){.agenda-cols{grid-template-columns:1fr 1fr;}}
 
 /* ===== MEMBERS ===== */
 .tab-btn{
@@ -567,6 +570,7 @@ body:not(.admin-mode) .upload-section{display:none!important;}
 
   /* Agenda — 1 coluna */
   .two-col{grid-template-columns:1fr!important;}
+  .agenda-cols{grid-template-columns:1fr!important;}
 
   /* Relatos */
   .rtype-grid{grid-template-columns:1fr 1fr;}
@@ -616,6 +620,8 @@ body:not(.admin-mode) .upload-section{display:none!important;}
 <!-- ADMIN BAR -->
 <div class="admin-bar" id="admin-bar">
   ⚙️ MODO ADMINISTRADOR ATIVO &nbsp;·&nbsp;
+  <a href="dashboard.html" style="color:#fff;text-decoration:underline;opacity:0.75;">📊 Dashboard de Relatos</a>
+  &nbsp;·&nbsp;
   <span style="cursor:pointer;text-decoration:underline;opacity:0.75;" onclick="openModal('admin-logout-modal')">Encerrar sessão</span>
 </div>
 
@@ -624,7 +630,7 @@ body:not(.admin-mode) .upload-section{display:none!important;}
   <div class="aw-card">
     <div class="aw-badge" id="aw-badge">💡</div>
     <div class="aw-body">
-      <span class="aw-tag">Dica de Segurança · CIPAA FMC</span>
+      <span class="aw-tag">Dica de Segurança · CIPAA FMC · <span id="aw-categoria" style="color:var(--green-l);font-weight:700;">Prevenção</span></span>
       <div id="aw-text">Carregando…</div>
       <div class="aw-dots-row" id="aw-dots"></div>
     </div>
@@ -676,17 +682,18 @@ body:not(.admin-mode) .upload-section{display:none!important;}
         <div class="sh-icon">📅</div>
         <div>
           <div class="sh-title">Agenda 2026</div>
-          <div class="sh-sub">Reuniões · Inspeções · Eventos</div>
+          <div class="sh-sub">Reuniões · Eventos · SIPAT</div>
         </div>
       </div>
+      <button class="edit-fab" onclick="openModal('new-ev-modal')" style="font-size:0.78rem;padding:0.35rem 0.85rem;border-radius:var(--r2);background:var(--green-dim);border:1px solid var(--border);color:var(--green-l);cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:1px;" title="Adicionar evento pontual">+ EVENTO</button>
     </div>
-    <div class="two-col">
+    <div class="agenda-cols">
       <div>
         <div class="doc-section-label" style="margin-bottom:0.75rem;">Reuniões Ordinárias</div>
         <div class="ev-list" id="ev-reunions"></div>
       </div>
       <div>
-        <div class="doc-section-label" style="margin-bottom:0.75rem;">Inspeções e Eventos</div>
+        <div class="doc-section-label" style="margin-bottom:0.75rem;">Eventos e SIPAT 2026</div>
         <div class="ev-list" id="ev-inspections"></div>
       </div>
     </div>
@@ -925,6 +932,38 @@ body:not(.admin-mode) .upload-section{display:none!important;}
   </div>
 </div>
 
+<!-- MODAL: NOVO EVENTO PONTUAL -->
+<div class="overlay" id="new-ev-modal">
+  <div class="modal" style="max-width:420px;">
+    <div class="modal-hd">
+      <div class="modal-title">NOVO EVENTO PONTUAL</div>
+      <button class="modal-x" onclick="closeModal('new-ev-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="rform">
+        <div class="ff"><label>Título do Evento</label><input type="text" id="nev-name" placeholder="Ex: Palestra de Segurança"></div>
+        <div class="ff"><label>Dia</label><input type="number" id="nev-day" min="1" max="31" placeholder="15"></div>
+        <div class="ff"><label>Mês</label><input type="text" id="nev-mon" placeholder="JAN" style="text-transform:uppercase;"></div>
+        <div class="ff"><label>Horário</label><input type="text" id="nev-time" placeholder="09h00"></div>
+        <div class="ff"><label>Local / Sala</label><input type="text" id="nev-loc" placeholder="Sala 10, Bloco B"></div>
+        <div class="ff">
+          <label>Tipo</label>
+          <select id="nev-type" style="width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border);border-radius:var(--r2);padding:0.55rem 0.75rem;color:var(--text);font-family:'Rajdhani',sans-serif;font-size:0.9rem;">
+            <option value="t">Treinamento</option>
+            <option value="i">Inspeção</option>
+            <option value="s">SIPAT</option>
+            <option value="r">Reunião</option>
+          </select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-act">
+      <button class="btn-sec" onclick="closeModal('new-ev-modal')">Cancelar</button>
+      <button class="btn-save" onclick="saveNewEvent()">ADICIONAR</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: VINCULAR NR-5 -->
 <div class="overlay" id="nr5-modal">
   <div class="modal" style="max-width:420px;">
@@ -1067,9 +1106,19 @@ const DEFAULT_REUNIONS = [
 const DEFAULT_INSPECTIONS = [
   {id:'i1',day:28,mon:'MAR',time:'09h00',name:'Inspeção — Laboratórios Bloco A',loc:'Bloco A',type:'i'},
   {id:'i2',day:15,mon:'MAI',time:'10h00',name:'Inspeção — Biblioteca e Áreas Comuns',loc:'Biblioteca Central',type:'i'},
+  // SIPAT 2026 — Junho (programação fictícia — edite conforme necessário)
+  {id:'s1',day:1,mon:'JUN',time:'08h30',name:'SIPAT 2026 — Abertura Oficial',loc:'Auditório Principal',type:'s'},
+  {id:'s2',day:1,mon:'JUN',time:'14h00',name:'Palestra: Saúde Mental no Trabalho — Dra. Ana Paula Souza',loc:'Sala A — a confirmar',type:'s'},
+  {id:'s3',day:1,mon:'JUN',time:'16h00',name:'Palestra: Prevenção de Acidentes no Ambiente Acadêmico — Eng. Carlos Menezes',loc:'Sala A — a confirmar',type:'s'},
+  {id:'s4',day:2,mon:'JUN',time:'09h00',name:'Palestra: Ergonomia e Postura no Trabalho — Ft. Renata Lima',loc:'Sala B — a confirmar',type:'s'},
+  {id:'s5',day:2,mon:'JUN',time:'14h00',name:'Palestra: Primeiros Socorros — Enfª. Juliana Matos',loc:'Sala B — a confirmar',type:'s'},
+  {id:'s6',day:3,mon:'JUN',time:'09h00',name:'Palestra: Uso Correto de EPIs — Tec. Filipe Andrade',loc:'Sala A — a confirmar',type:'s'},
+  {id:'s7',day:3,mon:'JUN',time:'14h00',name:'Palestra: Assédio Moral e Sexual — Adv. Marcos Vinicius',loc:'Sala B — a confirmar',type:'s'},
+  {id:'s8',day:4,mon:'JUN',time:'09h00',name:'Palestra: Riscos Químicos e Biológicos — Dr. José Carlos',loc:'Sala A — a confirmar',type:'s'},
+  {id:'s9',day:4,mon:'JUN',time:'14h00',name:'Palestra: Saúde da Mulher no Ambiente de Trabalho — Dra. Heloísa Renata',loc:'Sala B — a confirmar',type:'s'},
+  {id:'s10',day:5,mon:'JUN',time:'09h00',name:'Palestra: Prevenção ao Uso de Álcool e Drogas — Psic. Wellington Gomes',loc:'Sala A — a confirmar',type:'s'},
+  {id:'s11',day:5,mon:'JUN',time:'14h00',name:'SIPAT 2026 — Encerramento e Premiação',loc:'Auditório Principal',type:'s'},
   {id:'i3',day:22,mon:'AGO',time:'08h00',name:'Treinamento Brigada de Incêndio',loc:'Área Externa Campus',type:'t'},
-  {id:'i4',day:5,mon:'OUT',time:'09h00',name:'SIPAT 2026 — Abertura',loc:'Auditório Principal',type:'s'},
-  {id:'i5',day:12,mon:'OUT',time:'11h00',name:'SIPAT 2026 — Encerramento',loc:'Auditório Principal',type:'s'},
   {id:'i6',day:3,mon:'NOV',time:'14h00',name:'Curso NR-35 — Trabalho em Altura',loc:'Sala 12, Bloco B',type:'t'},
 ];
 
@@ -1188,6 +1237,29 @@ function renderEvents(col,elId){
   }).join('');
 }
 
+
+async function saveNewEvent(){
+  if(!adminMode){toast('🔐 Acesso restrito.');return;}
+  const name = document.getElementById('nev-name').value.trim();
+  const day  = parseInt(document.getElementById('nev-day').value);
+  const mon  = document.getElementById('nev-mon').value.trim().toUpperCase();
+  const time = document.getElementById('nev-time').value.trim();
+  const loc  = document.getElementById('nev-loc').value.trim();
+  const type = document.getElementById('nev-type').value;
+  if(!name||!day||!mon||!time){toast('⚠️ Preencha todos os campos obrigatórios.');return;}
+  const id = 'ev_' + Date.now();
+  const col = (type === 'r') ? 'reunions' : 'inspections';
+  const data = {name, day, mon, time, loc, type};
+  try{
+    await setDoc(doc(db, col, id), data);
+    S[col].push({id, ...data});
+    renderEvents(col, col==='reunions'?'ev-reunions':'ev-inspections');
+    closeModal('new-ev-modal');
+    // clear fields
+    ['nev-name','nev-day','nev-mon','nev-time','nev-loc'].forEach(f=>document.getElementById(f).value='');
+    toast('✅ Evento adicionado!');
+  }catch(e){toast('❌ Erro ao salvar.');console.error(e);}
+}
 function openEditEvent(id,col){
   if(!adminMode)return;
   const ev=S[col].find(x=>x.id===id);if(!ev)return;
@@ -1399,17 +1471,39 @@ function toast(msg){
 
 // ==================== DICAS ====================
 const TIPS=[
-  {ico:'🔥',txt:'Conheça a localização dos extintores no seu setor e saiba como utilizá-los.'},
-  {ico:'🚪',txt:'Nunca bloqueie saídas de emergência com móveis ou equipamentos.'},
-  {ico:'💊',txt:'Informe sua chefia sobre condições de saúde que possam afetar sua segurança no trabalho.'},
-  {ico:'🖥️',txt:'Ajuste a altura da cadeira e monitor para evitar problemas de postura e LER/DORT.'},
-  {ico:'🧤',txt:'Use sempre os EPIs indicados para a sua função — eles existem para proteger você.'},
-  {ico:'⚡',txt:'Não sobrecarregue tomadas. Desconecte aparelhos antes de limpá-los.'},
-  {ico:'🚶',txt:'Atenção ao piso molhado. Sinalização amarela significa perigo de queda.'},
-  {ico:'📱',txt:'Não use celular ao caminhar em áreas de movimentação de veículos ou equipamentos.'},
-  {ico:'🤝',txt:'Você tem direito a recusar atividades que representem risco grave e iminente à sua saúde.'},
-  {ico:'💬',txt:'Relate riscos à CIPAA — cada relato contribui para um ambiente mais seguro para todos.'},
-  {ico:'💧',txt:'Mantenha-se hidratado, especialmente em ambientes aquecidos ou com esforço físico.'},
+  // Prevenção de acidentes
+  {ico:'🔥',tag:'Prevenção',txt:'Conheça a localização dos extintores no seu setor e saiba como utilizá-los corretamente.'},
+  {ico:'🚪',tag:'Emergência',txt:'Nunca bloqueie saídas de emergência com móveis ou equipamentos. Mantenha as rotas sempre livres.'},
+  {ico:'🧤',tag:'EPI',txt:'Use sempre os EPIs indicados para a sua função. Eles existem para proteger você — não são opcionais.'},
+  {ico:'⚡',tag:'Elétrica',txt:'Não sobrecarregue tomadas e extensões. Desconecte aparelhos antes de limpá-los ou realizar manutenção.'},
+  {ico:'🚶',tag:'Quedas',txt:'Atenção ao piso molhado. Sinalização amarela significa perigo — reduza a velocidade e aumente o cuidado.'},
+  // Saúde e ergonomia
+  {ico:'🖥️',tag:'Ergonomia',txt:'Ajuste a altura da cadeira e do monitor para evitar problemas de postura, LER e DORT.'},
+  {ico:'💧',tag:'Hidratação',txt:'Mantenha-se hidratado, especialmente em ambientes aquecidos ou com esforço físico contínuo.'},
+  {ico:'💊',tag:'Saúde',txt:'Informe sua chefia sobre condições de saúde que possam afetar sua segurança no trabalho.'},
+  {ico:'🧘',tag:'Saúde Mental',txt:'Saúde mental é saúde do trabalho. Busque apoio se sentir sintomas de esgotamento, estresse ou ansiedade.'},
+  {ico:'😴',tag:'Fadiga',txt:'Fadiga aumenta o risco de acidentes. Comunique seu superior se estiver em condições impróprias para trabalhar.'},
+  // Direitos e relatos
+  {ico:'🤝',tag:'Seus Direitos',txt:'Você tem direito a recusar atividades que representem risco grave e iminente à sua saúde e integridade.'},
+  {ico:'💬',tag:'Relatos',txt:'Relate riscos à CIPAA — cada relato contribui para um ambiente mais seguro para todos os funcionários.'},
+  {ico:'🚫',tag:'Assédio',txt:'Assédio moral ou sexual é crime. A CIPAA e a Ouvidoria FMC estão disponíveis para receber seu relato com sigilo.'},
+  // Campanhas
+  {ico:'📱',tag:'Atenção',txt:'Não use celular ao caminhar em áreas de movimentação de veículos, equipamentos ou pacientes.'},
+  {ico:'🧴',tag:'Higiene',txt:'Higienize as mãos frequentemente. A prevenção de infecções começa por um gesto simples.'},
+  {ico:'🌿',tag:'Meio Ambiente',txt:'Descarte resíduos corretamente. Resíduos químicos e biológicos têm coleta específica no campus.'},
+  {ico:'🏥',tag:'SIPAT 2026',txt:'A SIPAT 2026 acontece em junho! Fique atento à programação e participe das palestras.'},
+  // Campanhas de prevenção
+  {ico:'🧠',tag:'Campanha',txt:'Janeiro Branco: cuide da saúde mental. Converse, reflita e busque apoio quando necessário.'},
+  {ico:'❤️',tag:'Campanha',txt:'Fevereiro Roxo: conscientização sobre o lúpo eritematoso. Redução do estresse é parte do tratamento.'},
+  {ico:'🟣',tag:'Campanha',txt:'Março Lilás: prevenção ao câncer de colo de útero e mama. Realize seus exames periódicos.'},
+  {ico:'🟡',tag:'Campanha',txt:'Maio Amarelo: atenção no trânsito. Seja no campus ou fora dele, respeite as sinalizações.'},
+  {ico:'🟢',tag:'Campanha',txt:'Junho Verde: doação de órgãos salva vidas. Converse com sua família sobre o tema.'},
+  {ico:'🔴',tag:'Campanha',txt:'Julho Vermelho: prevenção às hepatites virais. Cuidado com instrumentos perfurocortantes.'},
+  {ico:'🟠',tag:'Campanha',txt:'Agosto Dourado: valorize o aleitamento materno e o direito das trabalhadoras mães.'},
+  {ico:'🔵',tag:'Campanha',txt:'Setembro Azul: mês de conscientização sobre a surdez. Reduza o volume e use protetores em ambientes ruidosos.'},
+  {ico:'🟣',tag:'Outubro Rosa',txt:'Outubro Rosa: prevenção ao câncer de mama. O diagnóstico precoce salva vidas.'},
+  {ico:'🔵',tag:'Novembro Azul',txt:'Novembro Azul: saúde do homem. Realize exames de rotina e não negligencie sua saúde.'},
+  {ico:'🟠',tag:'Campanha',txt:'Dezembro Laranja: prevenção a acidentes de trabalho. Comunique riscos à CIPAA.'},
 ];
 let curTip=0,tipTimer=null;
 function showTip(i){
@@ -1465,7 +1559,7 @@ function nextTip(){showTip((curTip+1)%TIPS.length);}
 Object.assign(window,{
   switchTab,setRType,enviarRelato,
   openEditMember,saveMember,
-  openEditEvent,saveEvent,
+  openEditEvent,saveEvent,saveNewEvent,
   openNr5Modal,saveNr5Link,
   addDocumento,toggleDocNome,
   handleAdminBtn,doAdminLogin,doAdminLogout,togglePwVis,
